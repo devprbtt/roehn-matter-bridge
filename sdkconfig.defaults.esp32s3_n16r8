@@ -7,7 +7,7 @@ CONFIG_SPIRAM_SPEED_80M=y
 CONFIG_SPIRAM_BOOT_INIT=y
 CONFIG_SPIRAM_USE_MALLOC=y
 # Allocations <8KB stay in internal DRAM (BLE EMI, DMA buffers)
-CONFIG_SPIRAM_MALLOC_ALWAYSINTERNAL=512
+CONFIG_SPIRAM_MALLOC_ALWAYSINTERNAL=0
 # Route WiFi/LwIP heap to PSRAM to free internal RAM for BLE
 CONFIG_SPIRAM_TRY_ALLOCATE_WIFI_LWIP=y
 # Move BSS/noinit segments marked for external memory into PSRAM to relieve DRAM
