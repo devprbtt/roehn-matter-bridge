@@ -2050,19 +2050,16 @@ extern "C" void app_main()
     esp_matter::node_t *node = esp_matter::node::create(&node_config, app_attribute_update_cb, app_identification_cb);
     ESP_ERROR_CHECK(node ? ESP_OK : ESP_FAIL);
 
-    create_light_endpoints(node);
-
-    ESP_LOGI(kTag, "DEBUG A: endpoints created");
-
-    // prepare_wifi_hostname();  // keep disabled
-
+    // Start Matter/WiFi BEFORE creating endpoints so WiFi DMA descriptors
+    // can be allocated from unfragmented internal heap.
     ESP_LOGI(kTag, "Starting Matter stack");
-    ESP_LOGI(kTag, "DEBUG B: before Matter start");
-
     ESP_ERROR_CHECK(esp_matter::start(app_event_cb));
-
     g_matter_started = true;
     ESP_LOGI(kTag, "DEBUG C: Matter stack started");
+
+    // Create endpoints dynamically after Matter stack is running.
+    create_light_endpoints(node);
+    ESP_LOGI(kTag, "DEBUG A: endpoints created");
 
     g_command_queue = xQueueCreate(8, sizeof(PendingLoadCommand));
     if (!g_command_queue) {
