@@ -1,0 +1,2804 @@
+[
+  {
+    "Guid": "80000000-0000-0000-0000-000000000001",
+    "modelBaseName": "ADP-DIM8",
+    "FirmwareName": "DIM8",
+    "FirmwareExtendedName": "ADP-DIM8",
+    "Type": 60,
+    "TypeCategory": 2,
+    "MaxUnits": 0,
+    "MaxUnitsInScene": 0,
+    "Image": {
+      "type": 0,
+      "value": "ADP_DIM8_TOP.png"
+    },
+    "Icon": {
+      "type": 0,
+      "value": "M 10,100 C 10,300 300,-200 300,100"
+    },
+    "Slots": [
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 8,
+        "SlotType": 2,
+        "IO": 1
+      },
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 6,
+        "SlotType": 6,
+        "IO": 1
+      }
+    ],
+    "_source_file": "ADPDIM8.json"
+  },
+  {
+    "Guid": "80000000-0000-0000-0000-000000000003",
+    "modelBaseName": "ADP-LX4",
+    "FirmwareName": "LX4",
+    "FirmwareExtendedName": "ADP-LX4",
+    "Type": 61,
+    "TypeCategory": 5,
+    "MaxUnits": 0,
+    "MaxUnitsInScene": 0,
+    "Image": {
+      "type": 0,
+      "value": "ADP_LX4_TOP.png"
+    },
+    "Icon": {
+      "type": 0,
+      "value": "M 10,100 C 10,300 300,-200 300,100"
+    },
+    "Slots": [
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 4,
+        "SlotType": 7,
+        "IO": 1,
+        "UnitComposers": [
+          {
+            "Name": "Opening Percentage",
+            "Unit": null,
+            "PortNumber": 1,
+            "PortType": 6,
+            "Kind": 1,
+            "IO": 1,
+            "Value": 0
+          },
+          {
+            "Name": "Current Position",
+            "Unit": null,
+            "PortNumber": 5,
+            "PortType": 6,
+            "Kind": 1,
+            "IO": 0,
+            "Value": 0
+          }
+        ]
+      },
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 6,
+        "SlotType": 6
+      }
+    ],
+    "_source_file": "ADPLX4.json"
+  },
+  {
+    "Guid": "80000000-0000-0000-0000-000000000004",
+    "FirmwareName": "M16",
+    "FirmwareExtendedName": "M16",
+    "modelBaseName": "ADP-M16",
+    "Type": 63,
+    "TypeCategory": 0,
+    "MaxUnits": 12288,
+    "MaxUnitsInScene": 8000,
+    "MaxDevices": 250,
+    "MaxTriggers": 256,
+    "MaxProcedures": 512,
+    "MaxVariables": 140,
+    "Image": {
+      "type": 0,
+      "value": "ADP_M16_TOP.png"
+    },
+    "Icon": {
+      "type": 0,
+      "value": "M 10,100 C 10,300 300,-200 300,100"
+    },
+    "PortNames": [
+      "Port_1_9",
+      "Port_2_10",
+      "Port_3_11",
+      "Port_4_12",
+      "Port_5_6_13_14",
+      "Port_7_8_15_16"
+    ],
+    "Slots": [
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 250,
+        "SlotType": 0
+      },
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 255,
+        "SlotType": 8,
+        "IO": 1
+      }
+    ],
+    "UnitComposers": [
+      {
+        "Name": "Ativo",
+        "Unit": null,
+        "NotProgrammable": true,
+        "PortNumber": 1,
+        "PortType": 0,
+        "Kind": 0,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Modulos HSNET ativos",
+        "Unit": null,
+        "PortNumber": 1,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Modulos HSNET registrados",
+        "Unit": null,
+        "PortNumber": 2,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Data",
+        "Unit": null,
+        "NotProgrammable": true,
+        "PortNumber": 3,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Hora",
+        "Unit": null,
+        "NotProgrammable": true,
+        "PortNumber": 4,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "DST",
+        "Unit": null,
+        "PortNumber": 2,
+        "PortType": 0,
+        "Kind": 0,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Nascer do Sol",
+        "Unit": null,
+        "NotProgrammable": true,
+        "PortNumber": 5,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Por do sol",
+        "Unit": null,
+        "NotProgrammable": true,
+        "PortNumber": 6,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Posi\u00e7\u00e3o Solar",
+        "Unit": null,
+        "PortNumber": 7,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Flag RTC",
+        "Unit": null,
+        "PortNumber": 8,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Flag SNTP",
+        "Unit": null,
+        "PortNumber": 9,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Flag MYIP",
+        "Unit": null,
+        "PortNumber": 10,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Flag DDNS",
+        "Unit": null,
+        "PortNumber": 11,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Web IP",
+        "Unit": null,
+        "PortNumber": 1,
+        "PortType": 1100,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Ultima inicializacao",
+        "Unit": null,
+        "PortNumber": 2,
+        "PortType": 1100,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Tensao",
+        "Unit": null,
+        "PortNumber": 12,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Corrente",
+        "Unit": null,
+        "PortNumber": 13,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Power",
+        "Unit": null,
+        "PortNumber": 14,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Temperatura",
+        "Unit": null,
+        "PortNumber": 15,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      }
+    ],
+    "_source_file": "ADPM16.json"
+  },
+  {
+    "Guid": "80000000-0000-0000-0000-000000000018",
+    "FirmwareName": "M8",
+    "FirmwareExtendedName": "M8",
+    "modelBaseName": "ADP-M8",
+    "Type": 63,
+    "TypeCategory": 0,
+    "MaxUnits": 12288,
+    "MaxUnitsInScene": 8000,
+    "MaxDevices": 250,
+    "MaxTriggers": 256,
+    "MaxProcedures": 512,
+    "MaxVariables": 140,
+    "Image": {
+      "type": 0,
+      "value": "ADP_M8_TOP.png"
+    },
+    "Icon": {
+      "type": 0,
+      "value": "M 10,100 C 10,300 300,-200 300,100"
+    },
+    "PortNames": [
+      "Port_1",
+      "Port_2",
+      "Port_3",
+      "Port_4",
+      "Port_5_6",
+      "Port_7_8"
+    ],
+    "Slots": [
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 250,
+        "SlotType": 0
+      },
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 255,
+        "SlotType": 8,
+        "IO": 1
+      }
+    ],
+    "UnitComposers": [
+      {
+        "Name": "Ativo",
+        "Unit": null,
+        "PortNumber": 1,
+        "PortType": 0,
+        "Kind": 0,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Modulos HSNET ativos",
+        "Unit": null,
+        "PortNumber": 1,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Modulos HSNET registrados",
+        "Unit": null,
+        "PortNumber": 2,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Data",
+        "Unit": null,
+        "NotProgrammable": true,
+        "PortNumber": 3,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Hora",
+        "Unit": null,
+        "NotProgrammable": true,
+        "PortNumber": 4,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "DST",
+        "Unit": null,
+        "PortNumber": 2,
+        "PortType": 0,
+        "Kind": 0,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Nascer do Sol",
+        "Unit": null,
+        "NotProgrammable": true,
+        "PortNumber": 5,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Por do sol",
+        "Unit": null,
+        "NotProgrammable": true,
+        "PortNumber": 6,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Posi\u00e7\u00e3o Solar",
+        "Unit": null,
+        "PortNumber": 7,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Flag RTC",
+        "Unit": null,
+        "PortNumber": 8,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Flag SNTP",
+        "Unit": null,
+        "PortNumber": 9,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Flag MYIP",
+        "Unit": null,
+        "PortNumber": 10,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Flag DDNS",
+        "Unit": null,
+        "PortNumber": 11,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Web IP",
+        "Unit": null,
+        "PortNumber": 1,
+        "PortType": 1100,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Ultima inicializacao",
+        "Unit": null,
+        "PortNumber": 2,
+        "PortType": 1100,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Tensao",
+        "Unit": null,
+        "PortNumber": 12,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Corrente",
+        "Unit": null,
+        "PortNumber": 13,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Power",
+        "Unit": null,
+        "PortNumber": 14,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Temperatura",
+        "Unit": null,
+        "PortNumber": 15,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      }
+    ],
+    "_source_file": "ADPM8.json"
+  },
+  {
+    "Guid": "80000000-0000-0000-0000-000000000006",
+    "modelBaseName": "ADP-RL12",
+    "FirmwareName": "RL12",
+    "FirmwareExtendedName": "ADP-RL12",
+    "Type": 59,
+    "TypeCategory": 1,
+    "MaxUnits": 0,
+    "MaxUnitsInScene": 0,
+    "Image": {
+      "type": 0,
+      "value": "ADP_RL12_TOP.png"
+    },
+    "Icon": {
+      "type": 0,
+      "value": "M 10,100 C 10,300 300,-200 300,100"
+    },
+    "Slots": [
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 12,
+        "SlotType": 1,
+        "IO": 1
+      },
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 6,
+        "SlotType": 6,
+        "IO": 1
+      }
+    ],
+    "_source_file": "ADPRL12.json"
+  },
+  {
+    "Guid": "80000000-0000-0000-0000-000000000007",
+    "modelBaseName": "AGP-24R",
+    "FirmwareName": "GPLUG",
+    "FirmwareExtendedName": "RL24IP",
+    "Type": 50,
+    "TypeCategory": 0,
+    "MaxUnits": 2048,
+    "MaxUnitsInScene": 4096,
+    "Image": {
+      "type": 0,
+      "value": "agp_24r.png"
+    },
+    "Icon": {
+      "type": 0,
+      "value": "M 10,100 C 10,300 300,-200 300,100"
+    },
+    "Slots": [
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 64,
+        "SlotType": 0
+      },
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 24,
+        "SlotType": 1,
+        "IO": 1
+      },
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 4,
+        "SlotType": 4,
+        "IO": 1
+      },
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 20,
+        "SlotType": 6,
+        "IO": 1
+      },
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 64,
+        "SlotType": 8,
+        "IO": 1
+      }
+    ],
+    "UnitComposers": [
+      {
+        "Name": "Ativo",
+        "Unit": null,
+        "PortNumber": 1,
+        "PortType": 0,
+        "Kind": 0,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Modulos HSNET ativos",
+        "Unit": null,
+        "PortNumber": 1,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Modulos HSNET registrados",
+        "Unit": null,
+        "PortNumber": 2,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Data",
+        "Unit": null,
+        "PortNumber": 3,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Hora",
+        "Unit": null,
+        "PortNumber": 4,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "DST",
+        "Unit": null,
+        "PortNumber": 2,
+        "PortType": 0,
+        "Kind": 0,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Nascer do Sol",
+        "Unit": null,
+        "PortNumber": 5,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Por do sol",
+        "Unit": null,
+        "PortNumber": 6,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Posi\u00e7\u00e3o Solar",
+        "Unit": null,
+        "PortNumber": 7,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Flag RTC",
+        "Unit": null,
+        "PortNumber": 8,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Flag SNTP",
+        "Unit": null,
+        "PortNumber": 9,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Flag MYIP",
+        "Unit": null,
+        "PortNumber": 10,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Flag DDNS",
+        "Unit": null,
+        "PortNumber": 11,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Web IP",
+        "Unit": null,
+        "PortNumber": 1,
+        "PortType": 1100,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Ultima inicializacao",
+        "Unit": null,
+        "PortNumber": 2,
+        "PortType": 1100,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Tensao",
+        "Unit": null,
+        "PortNumber": 12,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Corrente",
+        "Unit": null,
+        "PortNumber": 13,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Power",
+        "Unit": null,
+        "PortNumber": 14,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Temperatura",
+        "Unit": null,
+        "PortNumber": 15,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      }
+    ],
+    "_source_file": "AGP24R.json"
+  },
+  {
+    "Guid": "80000000-0000-0000-0000-000000000008",
+    "modelBaseName": "AGP-8D32R",
+    "FirmwareName": "GPLUG",
+    "FirmwareExtendedName": "GPLUG",
+    "Type": 50,
+    "TypeCategory": 0,
+    "MaxUnits": 2048,
+    "MaxUnitsInScene": 4096,
+    "Image": {
+      "type": 0,
+      "value": "agp_8d32r.png"
+    },
+    "Icon": {
+      "type": 0,
+      "value": "M 10,100 C 10,300 300,-200 300,100"
+    },
+    "Slots": [
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 64,
+        "SlotType": 0
+      },
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 32,
+        "SlotType": 1,
+        "IO": 1
+      },
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 8,
+        "SlotType": 2,
+        "IO": 1
+      },
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 7,
+        "SlotType": 4,
+        "IO": 1
+      },
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 28,
+        "SlotType": 6,
+        "IO": 1
+      },
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 8,
+        "SlotType": 3,
+        "IO": 0
+      },
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 64,
+        "SlotType": 8,
+        "IO": 1
+      }
+    ],
+    "UnitComposers": [
+      {
+        "Name": "Ativo",
+        "Unit": null,
+        "PortNumber": 1,
+        "PortType": 0,
+        "Kind": 0,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Modulos HSNET ativos",
+        "Unit": null,
+        "PortNumber": 1,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Modulos HSNET registrados",
+        "Unit": null,
+        "PortNumber": 2,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Data",
+        "Unit": null,
+        "PortNumber": 3,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Hora",
+        "Unit": null,
+        "PortNumber": 4,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "DST",
+        "Unit": null,
+        "PortNumber": 2,
+        "PortType": 0,
+        "Kind": 0,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Nascer do Sol",
+        "Unit": null,
+        "PortNumber": 5,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Por do sol",
+        "Unit": null,
+        "PortNumber": 6,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Posi\u00e7\u00e3o Solar",
+        "Unit": null,
+        "PortNumber": 7,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Flag RTC",
+        "Unit": null,
+        "PortNumber": 8,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Flag SNTP",
+        "Unit": null,
+        "PortNumber": 9,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Flag MYIP",
+        "Unit": null,
+        "PortNumber": 10,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Flag DDNS",
+        "Unit": null,
+        "PortNumber": 11,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Web IP",
+        "Unit": null,
+        "PortNumber": 1,
+        "PortType": 1100,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Ultima inicializacao",
+        "Unit": null,
+        "PortNumber": 2,
+        "PortType": 1100,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Tensao",
+        "Unit": null,
+        "PortNumber": 12,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Corrente",
+        "Unit": null,
+        "PortNumber": 13,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Power",
+        "Unit": null,
+        "PortNumber": 14,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Temperatura",
+        "Unit": null,
+        "PortNumber": 15,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      }
+    ],
+    "_source_file": "AGP8D32R.json"
+  },
+  {
+    "Guid": "80000000-0000-0000-0000-000000000012",
+    "modelBaseName": "AQL-GV-010V4",
+    "FirmwareName": "QL9",
+    "FirmwareExtendedName": "G-DC4",
+    "Type": 7,
+    "TypeCategory": 1,
+    "MaxUnits": 0,
+    "Image": {
+      "type": 0,
+      "value": "AQL-GV-O10V4_TOP.png"
+    },
+    "Icon": {
+      "type": 0,
+      "value": "M 10,100 C 10,300 300,-200 300,100"
+    },
+    "Slots": [
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 4,
+        "SlotType": 10,
+        "IO": 1
+      },
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 1,
+        "SlotType": 6,
+        "IO": 1
+      }
+    ],
+    "_source_file": "AQLGV010V4.json"
+  },
+  {
+    "Guid": "80000000-0000-0000-0000-000000000022",
+    "modelBaseName": "AQL-GV-1DALI64",
+    "FirmwareName": "DALI",
+    "FirmwareExtendedName": "",
+    "Type": 64,
+    "TypeCategory": 2,
+    "MaxUnits": 0,
+    "MaxUnitsInScene": 0,
+    "Image": {
+      "type": 0,
+      "value": "AQL-GV-1DALI64_TOP.png"
+    },
+    "Icon": {
+      "type": 0,
+      "value": "M 10,100 C 10,300 300,-200 300,100"
+    },
+    "Slots": [
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 64,
+        "SlotType": 13,
+        "IO": 1
+      }
+    ],
+    "UnitComposers": [
+      {
+        "Name": "Grupo 1",
+        "Unit": null,
+        "PortNumber": 65,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Grupo 2",
+        "Unit": null,
+        "PortNumber": 66,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Grupo 3",
+        "Unit": null,
+        "PortNumber": 67,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Grupo 4",
+        "Unit": null,
+        "PortNumber": 68,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Grupo 5",
+        "Unit": null,
+        "PortNumber": 69,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Grupo 6",
+        "Unit": null,
+        "PortNumber": 70,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Grupo 7",
+        "Unit": null,
+        "PortNumber": 71,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Grupo 8",
+        "Unit": null,
+        "PortNumber": 72,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Grupo 9",
+        "Unit": null,
+        "PortNumber": 73,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Grupo 10",
+        "Unit": null,
+        "PortNumber": 74,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Grupo 11",
+        "Unit": null,
+        "PortNumber": 75,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Grupo 12",
+        "Unit": null,
+        "PortNumber": 76,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Grupo 13",
+        "Unit": null,
+        "PortNumber": 77,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Grupo 14",
+        "Unit": null,
+        "PortNumber": 78,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Grupo 15",
+        "Unit": null,
+        "PortNumber": 79,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Grupo 16",
+        "Unit": null,
+        "PortNumber": 80,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Active ballasts",
+        "Unit": null,
+        "PortNumber": 81,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Gateway status",
+        "Unit": null,
+        "PortNumber": 82,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Lamp failures",
+        "Unit": null,
+        "PortNumber": 83,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Cen\u00e1rio 1",
+        "Unit": null,
+        "PortNumber": 1,
+        "PortType": 700,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Cen\u00e1rio 2",
+        "Unit": null,
+        "PortNumber": 2,
+        "PortType": 700,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Cen\u00e1rio 3",
+        "Unit": null,
+        "PortNumber": 3,
+        "PortType": 700,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Cen\u00e1rio 4",
+        "Unit": null,
+        "PortNumber": 4,
+        "PortType": 700,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Cen\u00e1rio 5",
+        "Unit": null,
+        "PortNumber": 5,
+        "PortType": 700,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Cen\u00e1rio 6",
+        "Unit": null,
+        "PortNumber": 6,
+        "PortType": 700,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Cen\u00e1rio 7",
+        "Unit": null,
+        "PortNumber": 7,
+        "PortType": 700,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Cen\u00e1rio 8",
+        "Unit": null,
+        "PortNumber": 8,
+        "PortType": 700,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Cen\u00e1rio 9",
+        "Unit": null,
+        "PortNumber": 9,
+        "PortType": 700,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Cen\u00e1rio 10",
+        "Unit": null,
+        "PortNumber": 10,
+        "PortType": 700,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Cen\u00e1rio 11",
+        "Unit": null,
+        "PortNumber": 11,
+        "PortType": 700,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Cen\u00e1rio 12",
+        "Unit": null,
+        "PortNumber": 12,
+        "PortType": 700,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Cen\u00e1rio 13",
+        "Unit": null,
+        "PortNumber": 13,
+        "PortType": 700,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Cen\u00e1rio 14",
+        "Unit": null,
+        "PortNumber": 14,
+        "PortType": 700,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Cen\u00e1rio 15",
+        "Unit": null,
+        "PortNumber": 15,
+        "PortType": 700,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Cen\u00e1rio 16",
+        "Unit": null,
+        "PortNumber": 16,
+        "PortType": 700,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      }
+    ],
+    "_source_file": "AQLGV1DALI64.json"
+  },
+  {
+    "Guid": "80000000-0000-0000-0000-000000000025",
+    "modelBaseName": "AQL-GV-DK32",
+    "MultipleHSNetIDs": 32,
+    "FirmwareName": "GRS2",
+    "FirmwareExtendedName": "DK32",
+    "Type": 65,
+    "TypeCategory": 4,
+    "MaxUnits": 0,
+    "MaxUnitsInScene": 0,
+    "Programmable": false,
+    "Image": {
+      "type": 0,
+      "value": "AQL-GV-DK32_TOP.png"
+    },
+    "Icon": {
+      "type": 0,
+      "value": "M 10,100 C 10,300 300,-200 300,100"
+    },
+    "Slots": [
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 32,
+        "SlotType": 14,
+        "IO": 1
+      }
+    ],
+    "UnitComposers": [
+      {
+        "Name": "Refrigera\u00e7\u00e3o",
+        "Unit": null,
+        "PortNumber": 1,
+        "PortType": 100,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Aquecimento",
+        "Unit": null,
+        "PortNumber": 2,
+        "PortType": 100,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "SP Refrigera\u00e7\u00e3o",
+        "Unit": null,
+        "PortNumber": 1,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "SP Aquecimento",
+        "Unit": null,
+        "PortNumber": 2,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "SP M\u00ednimo",
+        "Unit": null,
+        "PortNumber": 5,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "SP M\u00e1ximo",
+        "Unit": null,
+        "PortNumber": 9,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Fan Speed",
+        "Unit": null,
+        "PortNumber": 3,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Temperatura Retorno",
+        "Unit": null,
+        "PortNumber": 6,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Temperatura Insuflamento",
+        "Unit": null,
+        "PortNumber": 10,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Modo",
+        "Unit": null,
+        "PortNumber": 11,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "SP Modo",
+        "Unit": null,
+        "PortNumber": 12,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Demanda Compressor",
+        "Unit": null,
+        "PortNumber": 2,
+        "PortType": 0,
+        "Kind": 0,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Swing",
+        "Unit": null,
+        "PortNumber": 8,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Display/Light",
+        "Unit": null,
+        "PortNumber": 9,
+        "PortType": 100,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "GTW Status da Placa DTA",
+        "Unit": null,
+        "PortNumber": 1,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "GTW Status da comunica\u00e7\u00e3o do Bus DIIINET",
+        "Unit": null,
+        "PortNumber": 2,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "GTW Sequ\u00eancia do protocolo",
+        "Unit": null,
+        "PortNumber": 3,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "GTW Erros de comunica\u00e7\u00e3o",
+        "Unit": null,
+        "PortNumber": 4,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "GTW N\u00famero de Evaporadoras conectadas",
+        "Unit": null,
+        "PortNumber": 5,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      }
+    ],
+    "_source_file": "AQLGVDK32.json"
+  },
+  {
+    "Guid": "80000000-0000-0000-0000-000000000017",
+    "modelBaseName": "AQL-GV-GTW",
+    "FirmwareName": "LFT16",
+    "FirmwareExtendedName": "LRF16",
+    "Type": 53,
+    "TypeCategory": 5,
+    "MaxUnits": 0,
+    "MaxUnitsInScene": 0,
+    "Image": {
+      "type": 0,
+      "value": "AQL-GV-GTW_TOP.png"
+    },
+    "Icon": {
+      "type": 0,
+      "value": "M 10,100 C 10,300 300,-200 300,100"
+    },
+    "Slots": [
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 16,
+        "SlotType": 11,
+        "IO": 1,
+        "UnitComposers": [
+          {
+            "Name": "Opening Percentage",
+            "Unit": null,
+            "PortNumber": 1,
+            "PortType": 6,
+            "Kind": 1,
+            "IO": 1,
+            "Value": 0
+          },
+          {
+            "Name": "Current Position",
+            "Unit": null,
+            "PortNumber": 16,
+            "PortType": 6,
+            "Kind": 1,
+            "IO": 0,
+            "Value": 0
+          }
+        ]
+      }
+    ],
+    "_source_file": "AQLGVGTW.json"
+  },
+  {
+    "Guid": "80000000-0000-0000-0000-000000000015",
+    "modelBaseName": "AQL-GV-IR8",
+    "MultipleHSNetIDs": 8,
+    "FirmwareName": "TH-HHC",
+    "FirmwareExtendedName": "IR8P1",
+    "Type": 66,
+    "TypeCategory": 4,
+    "MaxUnits": 0,
+    "MaxUnitsInScene": 0,
+    "Programmable": false,
+    "Image": {
+      "type": 0,
+      "value": "IR8_TOP.png"
+    },
+    "Icon": {
+      "type": 0,
+      "value": "M 10,100 C 10,300 300,-200 300,100"
+    },
+    "Slots": [
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 8,
+        "SlotType": 4,
+        "IO": 1
+      }
+    ],
+    "UnitComposers": [
+      {
+        "Name": "Refrigera\u00e7\u00e3o",
+        "Unit": null,
+        "PortNumber": 1,
+        "PortType": 100,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Aquecimento",
+        "Unit": null,
+        "PortNumber": 2,
+        "PortType": 100,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "SP Refrigera\u00e7\u00e3o",
+        "Unit": null,
+        "PortNumber": 1,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "SP Aquecimento",
+        "Unit": null,
+        "PortNumber": 2,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "SP M\u00ednimo",
+        "Unit": null,
+        "PortNumber": 5,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "SP M\u00e1ximo",
+        "Unit": null,
+        "PortNumber": 9,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Fan Speed",
+        "Unit": null,
+        "PortNumber": 3,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Temperatura Retorno",
+        "Unit": null,
+        "PortNumber": 6,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Temperatura Insuflamento",
+        "Unit": null,
+        "PortNumber": 10,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Modo",
+        "Unit": null,
+        "PortNumber": 11,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "SP Modo",
+        "Unit": null,
+        "PortNumber": 12,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Demanda Compressor",
+        "Unit": null,
+        "PortNumber": 2,
+        "PortType": 0,
+        "Kind": 0,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Swing",
+        "Unit": null,
+        "PortNumber": 13,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Display/Light",
+        "Unit": null,
+        "PortNumber": 3,
+        "PortType": 100,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      }
+    ],
+    "_source_file": "AQLGVIR8.json"
+  },
+  {
+    "Guid": "80000000-0000-0000-0000-000000000016",
+    "FirmwareName": "M4",
+    "FirmwareExtendedName": "M4",
+    "modelBaseName": "AQL-GV-M4",
+    "Type": 63,
+    "TypeCategory": 0,
+    "MaxUnits": 2048,
+    "MaxUnitsInScene": 2000,
+    "MaxDevices": 96,
+    "MaxTriggers": 150,
+    "MaxProcedures": 150,
+    "MaxVariables": 140,
+    "Image": {
+      "type": 0,
+      "value": "M4_TOP.png"
+    },
+    "Icon": {
+      "type": 0,
+      "value": "M 10,100 C 10,300 300,-200 300,100"
+    },
+    "PortNames": [
+      "Port_1",
+      "Port_2",
+      "Port_3",
+      "Port_4"
+    ],
+    "Slots": [
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 24,
+        "SlotType": 0
+      },
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 96,
+        "SlotType": 8,
+        "IO": 1
+      }
+    ],
+    "UnitComposers": [
+      {
+        "Name": "Ativo",
+        "Unit": null,
+        "PortNumber": 1,
+        "PortType": 0,
+        "Kind": 0,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Modulos HSNET ativos",
+        "Unit": null,
+        "PortNumber": 1,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Modulos HSNET registrados",
+        "Unit": null,
+        "PortNumber": 2,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Data",
+        "Unit": null,
+        "NotProgrammable": true,
+        "PortNumber": 3,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Hora",
+        "Unit": null,
+        "NotProgrammable": true,
+        "PortNumber": 4,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "DST",
+        "Unit": null,
+        "PortNumber": 2,
+        "PortType": 0,
+        "Kind": 0,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Nascer do Sol",
+        "Unit": null,
+        "NotProgrammable": true,
+        "PortNumber": 5,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Por do sol",
+        "Unit": null,
+        "NotProgrammable": true,
+        "PortNumber": 6,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Posi\u00e7\u00e3o Solar",
+        "Unit": null,
+        "PortNumber": 7,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Flag RTC",
+        "Unit": null,
+        "PortNumber": 8,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Flag SNTP",
+        "Unit": null,
+        "PortNumber": 9,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Flag MYIP",
+        "Unit": null,
+        "PortNumber": 10,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Flag DDNS",
+        "Unit": null,
+        "PortNumber": 11,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Web IP",
+        "Unit": null,
+        "PortNumber": 1,
+        "PortType": 1100,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Ultima inicializacao",
+        "Unit": null,
+        "PortNumber": 2,
+        "PortType": 1100,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Tensao",
+        "Unit": null,
+        "PortNumber": 12,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Corrente",
+        "Unit": null,
+        "PortNumber": 13,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Power",
+        "Unit": null,
+        "PortNumber": 14,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Temperatura",
+        "Unit": null,
+        "PortNumber": 15,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      }
+    ],
+    "_source_file": "AQLGVM4.json"
+  },
+  {
+    "Guid": "80000000-0000-0000-0000-000000000011",
+    "modelBaseName": "AQL-GV-PWM3",
+    "FirmwareName": "QL9",
+    "FirmwareExtendedName": "G-PWM",
+    "Type": 7,
+    "TypeCategory": 1,
+    "MaxUnits": 0,
+    "Image": {
+      "type": 0,
+      "value": "GUAVA_PWM3_TOP.png"
+    },
+    "Icon": {
+      "type": 0,
+      "value": "M 10,100 C 10,300 300,-200 300,100"
+    },
+    "Slots": [
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 3,
+        "SlotType": 9,
+        "IO": 1
+      }
+    ],
+    "_source_file": "AQLGVPWM3.json"
+  },
+  {
+    "Guid": "80000000-0000-0000-0000-000000000024",
+    "modelBaseName": "AQL-GV-PWM4",
+    "FirmwareName": "QL9",
+    "FirmwareExtendedName": "G-PWM4",
+    "Type": 7,
+    "TypeCategory": 1,
+    "MaxUnits": 0,
+    "Image": {
+      "type": 0,
+      "value": "GUAVA_PWM4_TOP.png"
+    },
+    "Icon": {
+      "type": 0,
+      "value": "M 10,100 C 10,300 300,-200 300,100"
+    },
+    "Slots": [
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 4,
+        "SlotType": 9,
+        "IO": 1
+      }
+    ],
+    "_source_file": "AQLGVPWM4.json"
+  },
+  {
+    "Guid": "80000000-0000-0000-0000-000000000010",
+    "modelBaseName": "AQL-GV-RL4",
+    "FirmwareName": "RO16",
+    "FirmwareExtendedName": "G-R4",
+    "Type": 19,
+    "TypeCategory": 1,
+    "MaxUnits": 0,
+    "Image": {
+      "type": 0,
+      "value": "AQL-GV-RL4_TOP.png"
+    },
+    "Icon": {
+      "type": 0,
+      "value": "M 10,100 C 10,300 300,-200 300,100"
+    },
+    "Slots": [
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 4,
+        "SlotType": 1,
+        "IO": 1
+      }
+    ],
+    "_source_file": "AQLGVRL4.json"
+  },
+  {
+    "Guid": "80000000-0000-0000-0000-000000000013",
+    "modelBaseName": "AQL-GV-SA1",
+    "FirmwareName": "TH-HHC",
+    "FirmwareExtendedName": "AGV-SA1",
+    "Type": 32,
+    "TypeCategory": 4,
+    "MaxUnits": 0,
+    "MaxUnitsInScene": 0,
+    "Programmable": false,
+    "Image": {
+      "type": 0,
+      "value": "AQL-GV-SA1_TOP.png"
+    },
+    "Icon": {
+      "type": 0,
+      "value": "M 10,100 C 10,300 300,-200 300,100"
+    },
+    "Slots": [
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 1,
+        "SlotType": 4,
+        "IO": 1
+      }
+    ],
+    "UnitComposers": [
+      {
+        "Name": "Refrigera\u00e7\u00e3o",
+        "Unit": null,
+        "PortNumber": 1,
+        "PortType": 100,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Aquecimento",
+        "Unit": null,
+        "PortNumber": 2,
+        "PortType": 100,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "SP Refrigera\u00e7\u00e3o",
+        "Unit": null,
+        "PortNumber": 1,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "SP Aquecimento",
+        "Unit": null,
+        "PortNumber": 2,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "SP M\u00ednimo",
+        "Unit": null,
+        "PortNumber": 5,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "SP M\u00e1ximo",
+        "Unit": null,
+        "PortNumber": 9,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Fan Speed",
+        "Unit": null,
+        "PortNumber": 3,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Temperatura Retorno",
+        "Unit": null,
+        "PortNumber": 6,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Temperatura Insuflamento",
+        "Unit": null,
+        "PortNumber": 10,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Modo",
+        "Unit": null,
+        "PortNumber": 11,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "SP Modo",
+        "Unit": null,
+        "PortNumber": 12,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Demanda Compressor",
+        "Unit": null,
+        "PortNumber": 2,
+        "PortType": 0,
+        "Kind": 0,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Swing",
+        "Unit": null,
+        "PortNumber": 13,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Display/Light",
+        "Unit": null,
+        "PortNumber": 3,
+        "PortType": 100,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      }
+    ],
+    "_source_file": "AQLGVSA1.json"
+  },
+  {
+    "Guid": "80000000-0000-0000-0000-000000000023",
+    "modelBaseName": "PNET Adapter",
+    "FirmwareName": "DIM8",
+    "FirmwareExtendedName": "PNET Adapter",
+    "Type": 67,
+    "FitInSlotType": 6,
+    "TypeCategory": 10,
+    "MaxUnits": 0,
+    "MaxUnitsInScene": 0,
+    "Image": {
+      "type": 0,
+      "value": "noimage.png"
+    },
+    "Icon": {
+      "type": 0,
+      "value": "M 10,100 C 10,300 300,-200 300,100"
+    },
+    "Slots": [
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 6,
+        "SlotType": 3,
+        "IO": 0
+      }
+    ],
+    "_source_file": "PNETAdapter.json"
+  },
+  {
+    "Guid": "80000000-0000-0000-0000-000000000009",
+    "FirmwareName": "QLW",
+    "FirmwareExtendedName": "QLW",
+    "modelBaseName": "QuickLight",
+    "Type": 58,
+    "TypeCategory": 0,
+    "MaxUnits": 1024,
+    "MaxUnitsInScene": 2048,
+    "Image": {
+      "type": 0,
+      "value": "QuickLight.png"
+    },
+    "Icon": {
+      "type": 0,
+      "value": "M 10,100 C 10,300 300,-200 300,100"
+    },
+    "Slots": [
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 64,
+        "SlotType": 0
+      },
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 4,
+        "SlotType": 2,
+        "IO": 1
+      },
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 2,
+        "SlotType": 1,
+        "IO": 1
+      },
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 32,
+        "SlotType": 8,
+        "IO": 1
+      }
+    ],
+    "UnitComposers": [
+      {
+        "Name": "Ativo",
+        "Unit": null,
+        "PortNumber": 1,
+        "PortType": 1,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Modulos HSNET ativos",
+        "Unit": null,
+        "PortNumber": 1,
+        "PortType": 6,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Modulos HSNET registrados",
+        "Unit": null,
+        "PortNumber": 2,
+        "PortType": 6,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Data",
+        "Unit": null,
+        "PortNumber": 3,
+        "PortType": 6,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Hora",
+        "Unit": null,
+        "PortNumber": 4,
+        "PortType": 6,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "DST",
+        "Unit": null,
+        "PortNumber": 2,
+        "PortType": 1,
+        "Kind": 0,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Nascer do Sol",
+        "Unit": null,
+        "PortNumber": 5,
+        "PortType": 6,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Por do sol",
+        "Unit": null,
+        "PortNumber": 6,
+        "PortType": 6,
+        "Kind": 1,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Flag RTC",
+        "Unit": null,
+        "PortNumber": 8,
+        "PortType": 6,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Flag SNTP",
+        "Unit": null,
+        "PortNumber": 9,
+        "PortType": 6,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Flag MYIP",
+        "Unit": null,
+        "PortNumber": 10,
+        "PortType": 6,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Flag DDNS",
+        "Unit": null,
+        "PortNumber": 11,
+        "PortType": 6,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Web IP",
+        "Unit": null,
+        "PortNumber": 1,
+        "PortType": 11,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      }
+    ],
+    "_source_file": "QUICKLIGHT.json"
+  },
+  {
+    "Guid": "80000000-0000-0000-0000-000000000019",
+    "modelBaseName": "RIO-PP",
+    "FirmwareName": "DIN16",
+    "FirmwareExtendedName": "RIO-PP",
+    "Type": 21,
+    "TypeCategory": 11,
+    "MaxUnits": 0,
+    "MaxUnitsInScene": 0,
+    "Image": {
+      "type": 0,
+      "value": "RIO-PP.png"
+    },
+    "Icon": {
+      "type": 0,
+      "value": "M 10,100 C 10,300 300,-200 300,100"
+    },
+    "Slots": [
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 4,
+        "SlotType": 3,
+        "IO": 0
+      }
+    ],
+    "UnitComposers": [
+      {
+        "Name": "Habilita Redirecionamento 1",
+        "Unit": null,
+        "PortNumber": 1,
+        "PortType": 100,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Habilita Redirecionamento 2",
+        "Unit": null,
+        "PortNumber": 2,
+        "PortType": 100,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Habilita Redirecionamento 3",
+        "Unit": null,
+        "PortNumber": 3,
+        "PortType": 100,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Habilita Redirecionamento 4",
+        "Unit": null,
+        "PortNumber": 4,
+        "PortType": 100,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      }
+    ],
+    "_source_file": "RIO-PP.json"
+  },
+  {
+    "Guid": "80000000-0000-0000-0000-000000000020",
+    "modelBaseName": "RIO-PRR",
+    "FirmwareName": "DIN16",
+    "FirmwareExtendedName": "RIO-PRR",
+    "Type": 21,
+    "TypeCategory": 11,
+    "MaxUnits": 0,
+    "MaxUnitsInScene": 0,
+    "Image": {
+      "type": 0,
+      "value": "RIO-PRR.png"
+    },
+    "Icon": {
+      "type": 0,
+      "value": "M 10,100 C 10,300 300,-200 300,100"
+    },
+    "Slots": [
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 2,
+        "SlotType": 3,
+        "IO": 0
+      },
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 2,
+        "SlotType": 1,
+        "IO": 1
+      }
+    ],
+    "UnitComposers": [
+      {
+        "Name": "Habilita Redirecionamento 1",
+        "Unit": null,
+        "PortNumber": 3,
+        "PortType": 100,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Habilita Redirecionamento 2",
+        "Unit": null,
+        "PortNumber": 4,
+        "PortType": 100,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      }
+    ],
+    "_source_file": "RIO-PRR.json"
+  },
+  {
+    "Guid": "80000000-0000-0000-0000-000000000021",
+    "modelBaseName": "WIDELUX",
+    "FirmwareName": "DIN16",
+    "FirmwareExtendedName": "WLUX",
+    "Type": 21,
+    "TypeCategory": 11,
+    "MaxUnits": 0,
+    "MaxUnitsInScene": 0,
+    "Programmable": false,
+    "CanReceivePIRSensorReport": true,
+    "CanSendPIRSensorReport": true,
+    "Image": {
+      "type": 0,
+      "value": "WIDELUX.png"
+    },
+    "Icon": {
+      "type": 0,
+      "value": "M 10,100 C 10,300 300,-200 300,100"
+    },
+    "Slots": [
+      {
+        "InitialPort": 1,
+        "SlotCapacity": 1,
+        "SlotType": 12,
+        "IO": 1
+      }
+    ],
+    "UnitComposers": [
+      {
+        "Name": "Sensor PIR",
+        "Unit": null,
+        "PortNumber": 1,
+        "PortType": 0,
+        "Kind": 0,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Walk Through",
+        "Unit": null,
+        "PortNumber": 2,
+        "PortType": 0,
+        "Kind": 0,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Occupancy",
+        "Unit": null,
+        "PortNumber": 3,
+        "PortType": 0,
+        "Kind": 0,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Vacancy",
+        "Unit": null,
+        "PortNumber": 4,
+        "PortType": 0,
+        "Kind": 0,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Daylight Harvesting",
+        "Unit": null,
+        "PortNumber": 5,
+        "PortType": 0,
+        "Kind": 0,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Load 1 Status",
+        "Unit": null,
+        "PortNumber": 6,
+        "PortType": 0,
+        "Kind": 0,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Load 2 Status",
+        "Unit": null,
+        "PortNumber": 7,
+        "PortType": 0,
+        "Kind": 0,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Load 3 Status",
+        "Unit": null,
+        "PortNumber": 8,
+        "PortType": 0,
+        "Kind": 0,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Photosensor",
+        "Unit": null,
+        "PortNumber": 1,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Harvesting Index",
+        "Unit": null,
+        "PortNumber": 1,
+        "PortType": 600,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Habilita Relacionamento Walk Through",
+        "Unit": null,
+        "PortNumber": 1,
+        "PortType": 100,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Habilita Relacionamento Occupancy/Vacancy",
+        "Unit": null,
+        "PortNumber": 2,
+        "PortType": 100,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Habilita Daylight Harvesting",
+        "Unit": null,
+        "PortNumber": 3,
+        "PortType": 100,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Habilita Photosensor",
+        "Unit": null,
+        "PortNumber": 4,
+        "PortType": 100,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Habilita Sinaliza\u00e7\u00e3o LEDs",
+        "Unit": null,
+        "PortNumber": 5,
+        "PortType": 100,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Red LED Override",
+        "Unit": null,
+        "PortNumber": 6,
+        "PortType": 100,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Green LED Override",
+        "Unit": null,
+        "PortNumber": 7,
+        "PortType": 100,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Blue LED Override",
+        "Unit": null,
+        "PortNumber": 8,
+        "PortType": 100,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Force Occupied",
+        "Unit": null,
+        "PortNumber": 9,
+        "PortType": 100,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Force Vacant",
+        "Unit": null,
+        "PortNumber": 10,
+        "PortType": 100,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Zerar contador de ocupa\u00e7\u00f5es",
+        "Unit": null,
+        "PortNumber": 11,
+        "PortType": 100,
+        "Kind": 0,
+        "IO": 1,
+        "Value": 0
+      },
+      {
+        "Name": "Numero de ocupa\u00e7\u00f5es",
+        "Unit": null,
+        "PortNumber": 1,
+        "PortType": 1100,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      },
+      {
+        "Name": "Tempo ultima presen\u00e7a (mili)",
+        "Unit": null,
+        "PortNumber": 2,
+        "PortType": 1100,
+        "Kind": 1,
+        "IO": 0,
+        "Value": 0
+      }
+    ],
+    "_source_file": "WIDELUX.json"
+  }
+]

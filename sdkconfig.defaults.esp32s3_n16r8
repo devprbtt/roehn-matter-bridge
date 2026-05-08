@@ -1,0 +1,11 @@
+CONFIG_ESPTOOLPY_FLASHSIZE_16MB=y
+CONFIG_ESPTOOLPY_FLASHSIZE="16MB"
+# Enable external PSRAM
+CONFIG_SPIRAM_SUPPORT=y
+CONFIG_SPIRAM_BOOT_INIT=y
+CONFIG_SPIRAM_USE_MALLOC=y
+CONFIG_SPIRAM_TYPE_AUTO=y
+CONFIG_SPIRAM_MALLOC_ALWAYS=y
+# Increase maximum dynamic endpoints so the bridge can expose many discovered lights
+CONFIG_ESP_MATTER_MAX_DYNAMIC_ENDPOINT_COUNT=128
+# Partition table kept as project default (partitions.csv)
