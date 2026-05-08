@@ -227,7 +227,7 @@ dependencies:
   idf:
     source:
       type: idf
-    version: 5.5.0
+    version: 5.5.3
 direct_dependencies:
 - espressif/esp_matter
 manifest_hash: 7ad26321421b39b5605bd28f35ad8b898d19ca29911a468711caed46daa83b95
