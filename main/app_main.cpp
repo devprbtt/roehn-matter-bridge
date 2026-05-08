@@ -1759,7 +1759,7 @@ static esp_err_t app_attribute_update_cb(esp_matter::attribute::callback_type_t 
 
 void create_light_endpoints(esp_matter::node_t *node)
 {
-    for (uint8_t i = 0; i < g_config.light_count && i < 4; ++i) {
+    for (uint8_t i = 0; i < g_config.light_count; ++i) {
         esp_matter::endpoint_t *endpoint = nullptr;
 
         if (g_config.lights[i].supports_brightness) {
@@ -2049,12 +2049,6 @@ extern "C" void app_main()
     esp_matter::node::config_t node_config = {};
     esp_matter::node_t *node = esp_matter::node::create(&node_config, app_attribute_update_cb, app_identification_cb);
     ESP_ERROR_CHECK(node ? ESP_OK : ESP_FAIL);
-
-    if (g_config.light_count > 4) {
-        ESP_LOGW(kTag, "Limiting light_count from %u to 4 for commissioning test",
-                static_cast<unsigned>(g_config.light_count));
-        g_config.light_count = 4;
-    }
 
     create_light_endpoints(node);
 
