@@ -5,7 +5,8 @@ CONFIG_SPIRAM_SUPPORT=y
 CONFIG_SPIRAM_BOOT_INIT=y
 CONFIG_SPIRAM_USE_MALLOC=y
 CONFIG_SPIRAM_TYPE_AUTO=y
-CONFIG_SPIRAM_MALLOC_ALWAYS=y
+# Route allocations >=8KB to PSRAM; keep small allocs (BLE EMI, DMA) in internal RAM
+CONFIG_SPIRAM_MALLOC_ALWAYSINTERNAL=8192
 # Increase maximum dynamic endpoints so the bridge can expose many discovered lights
 CONFIG_ESP_MATTER_MAX_DYNAMIC_ENDPOINT_COUNT=128
 # Partition table kept as project default (partitions.csv)
