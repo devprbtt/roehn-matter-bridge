@@ -180,8 +180,8 @@ TaskHandle_t g_gateway_task = nullptr;
 TaskHandle_t g_command_task = nullptr;
 QueueHandle_t g_command_queue = nullptr;
 bool g_wifi_hostname_set = false;
-ResourcesIndex g_resources = {};
-GatewayRuntime g_gateway = {};
+EXT_RAM_BSS_ATTR ResourcesIndex g_resources;
+EXT_RAM_BSS_ATTR GatewayRuntime g_gateway;
 bool g_matter_started = false;
 
 static const FallbackDriverSpec kFallbackLightDrivers[] = {
