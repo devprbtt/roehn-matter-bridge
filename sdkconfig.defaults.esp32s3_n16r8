@@ -15,4 +15,6 @@ CONFIG_SPIRAM_ALLOW_BSS_SEG_EXTERNAL_MEMORY=y
 CONFIG_SPIRAM_ALLOW_NOINIT_SEG_EXTERNAL_MEMORY=y
 # Increase maximum dynamic endpoints so the bridge can expose many discovered lights
 CONFIG_ESP_MATTER_MAX_DYNAMIC_ENDPOINT_COUNT=128
+# Route esp_matter data-model allocs (endpoints, clusters, attributes) to PSRAM
+CONFIG_ESP_MATTER_MEM_ALLOC_MODE_EXTERNAL=y
 # Partition table kept as project default (partitions.csv)
