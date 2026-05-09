@@ -1770,6 +1770,13 @@ static esp_matter::endpoint_t *create_minimal_light_endpoint(
     endpoint_t *ep = endpoint::create(node, ENDPOINT_FLAG_BRIDGE, nullptr);
     if (!ep) return nullptr;
 
+    // Descriptor cluster is created by common::create in the presets — must add
+    // it manually here since we use the raw endpoint::create base.
+    descriptor::config_t desc_cfg = {};
+    if (!descriptor::create(ep, &desc_cfg, CLUSTER_FLAG_SERVER)) {
+        return nullptr;
+    }
+
     uint32_t device_type_id = dimmable
         ? ESP_MATTER_DIMMABLE_LIGHT_DEVICE_TYPE_ID
         : ESP_MATTER_ON_OFF_LIGHT_DEVICE_TYPE_ID;
