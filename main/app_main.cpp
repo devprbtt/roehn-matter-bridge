@@ -977,7 +977,7 @@ esp_err_t roehn_set_load(const LightConfig &light, uint8_t level_percent)
 
     const uint8_t level = std::min<uint8_t>(100, level_percent);
 
-    snprintf(command, sizeof(command), "LOAD %u %u %03u 0000",
+    snprintf(command, sizeof(command), "LOAD %u %u %u",
              static_cast<unsigned>(resolve_control_address(light)),
              static_cast<unsigned>(light.channel),
              static_cast<unsigned>(level));
@@ -1446,7 +1446,7 @@ void gateway_poll_task(void *)
 {
     ESP_LOGI(kTag, "Gateway poll task started");
     while (true) {
-        refresh_gateway_runtime(false);
+        refresh_gateway_runtime(true);
         const uint16_t interval = std::max<uint16_t>(5, g_config.scan_interval_sec);
         vTaskDelay(pdMS_TO_TICKS(interval * 1000U));
     }
@@ -1904,7 +1904,7 @@ esp_err_t config_get_handler(httpd_req_t *req)
 
 esp_err_t status_get_handler(httpd_req_t *req)
 {
-    refresh_gateway_runtime(false);
+    refresh_gateway_runtime(true);
 
     cJSON *root = cJSON_CreateObject();
     cJSON *gateway = cJSON_AddObjectToObject(root, "gateway");
@@ -2137,6 +2137,14 @@ extern "C" void app_main()
         }
     }
 
+    if (!g_gateway_task) {
+        const BaseType_t task_created = xTaskCreate(gateway_poll_task, "gw_poll", 6144, nullptr, 4, &g_gateway_task);
+        if (task_created != pdPASS) {
+            ESP_LOGE(kTag, "Failed to create gateway poll task; light states will not update automatically");
+            g_gateway_task = nullptr;
+        }
+    }
+
     start_http_server();
     ESP_LOGI(kTag, "DEBUG D: HTTP setup UI ready");
 
@@ -2148,5 +2156,5 @@ extern "C" void app_main()
     apply_user_labels();
     log_onboarding_codes();
 
-    ESP_LOGI(kTag, "Gateway status refresh is handled on demand by /api/status");
+    ESP_LOGI(kTag, "Gateway poll task started; light states sync to Matter every scan_interval_sec");
 }

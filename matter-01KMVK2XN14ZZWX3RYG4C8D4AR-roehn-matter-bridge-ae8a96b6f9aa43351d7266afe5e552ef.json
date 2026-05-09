@@ -1,0 +1,578 @@
+{
+  "home_assistant": {
+    "installation_type": "Home Assistant OS",
+    "version": "2026.3.3",
+    "dev": false,
+    "hassio": true,
+    "virtualenv": false,
+    "python_version": "3.14.2",
+    "docker": true,
+    "arch": "x86_64",
+    "timezone": "America/Bahia",
+    "os_name": "Linux",
+    "os_version": "6.12.67-haos",
+    "container_arch": "amd64",
+    "supervisor": "2026.04.2",
+    "host_os": "Home Assistant OS 17.1",
+    "docker_version": "29.1.3",
+    "chassis": "embedded",
+    "run_as_root": true
+  },
+  "custom_components": {
+    "controlid": {
+      "documentation": "https://github.com/devprbtt/home-assistant-controlid-faceid",
+      "version": "0.3.2",
+      "requirements": []
+    },
+    "edgeos": {
+      "documentation": "https://github.com/elad-bar/ha-edgeos",
+      "version": "2.1.9",
+      "requirements": [
+        "aiohttp"
+      ]
+    },
+    "hacs": {
+      "documentation": "https://hacs.xyz/docs/use/",
+      "version": "2.0.5",
+      "requirements": [
+        "aiogithubapi>=22.10.1"
+      ]
+    },
+    "alexa_media": {
+      "documentation": "https://github.com/alandtse/alexa_media_player/wiki",
+      "version": "5.14.1",
+      "requirements": [
+        "alexapy==1.29.19",
+        "packaging>=20.3",
+        "wrapt>=1.14.0",
+        "dictor>=0.1.12,<0.2"
+      ]
+    },
+    "switch_manager": {
+      "documentation": "https://github.com/Sian-Lee-SA/Home-Assistant-Switch-Manager",
+      "version": "2.0.5",
+      "requirements": []
+    },
+    "hvactelnet": {
+      "documentation": null,
+      "version": "0.2.0",
+      "requirements": []
+    },
+    "browser_mod": {
+      "documentation": "https://github.com/thomasloven/hass-browser_mod/blob/master/README.md",
+      "version": "2.10.0",
+      "requirements": []
+    },
+    "smartir": {
+      "documentation": "https://github.com/smartHomeHub/SmartIR",
+      "version": "1.18.1",
+      "requirements": [
+        "aiofiles>=0.6.0"
+      ]
+    },
+    "roehn_wizard": {
+      "documentation": "https://github.com/devprbtt/roehn_dinplug",
+      "version": "0.1.0",
+      "requirements": []
+    },
+    "webserver_app": {
+      "documentation": "https://github.com/FaserF/hassio-addons/tree/master/custom_components/webserver_app",
+      "version": "3.3.1",
+      "requirements": []
+    },
+    "pyscript": {
+      "documentation": "https://github.com/custom-components/pyscript",
+      "version": "1.7.0",
+      "requirements": [
+        "croniter==6.0.0",
+        "watchdog==6.0.0"
+      ]
+    },
+    "scheduler": {
+      "documentation": "https://github.com/nielsfaber/scheduler-component",
+      "version": "v0.0.0",
+      "requirements": []
+    },
+    "espsomfy_rts": {
+      "documentation": "https://github.com/rstrouse/ESPSomfy-RTS/wiki/Configuring-the-Software",
+      "version": "2.4.7",
+      "requirements": [
+        "websocket-client==1.8.0",
+        "aiofiles"
+      ]
+    }
+  },
+  "integration_manifest": {
+    "domain": "matter",
+    "name": "Matter",
+    "after_dependencies": [
+      "hassio"
+    ],
+    "codeowners": [
+      "home-assistant/matter"
+    ],
+    "config_flow": true,
+    "dependencies": [
+      "websocket_api"
+    ],
+    "documentation": "https://www.home-assistant.io/integrations/matter",
+    "integration_type": "hub",
+    "iot_class": "local_push",
+    "requirements": [
+      "matter-python-client==0.4.1"
+    ],
+    "zeroconf": [
+      "_matter._tcp.local.",
+      "_matterc._udp.local."
+    ],
+    "is_built_in": true,
+    "overwrites_built_in": false
+  },
+  "setup_times": {
+    "null": {
+      "setup": 0.000857211999999663
+    },
+    "01KMVK2XN14ZZWX3RYG4C8D4AR": {
+      "wait_import_platforms": -0.0003752659999918251,
+      "wait_base_component": -0.00914031599998566,
+      "config_entry_setup": 0.11374455099999636
+    }
+  },
+  "data": {
+    "server_info": {
+      "fabric_id": 2,
+      "compressed_fabric_id": 5756979269365748131,
+      "schema_version": 11,
+      "min_supported_schema_version": 9,
+      "sdk_version": "2025.7.0",
+      "wifi_credentials_set": false,
+      "thread_credentials_set": false,
+      "bluetooth_enabled": false
+    },
+    "node": {
+      "node_id": 5,
+      "date_commissioned": "2026-05-09T00:06:02.465570",
+      "last_interview": "2026-05-09T00:07:30.729902",
+      "interview_version": 6,
+      "available": true,
+      "is_bridge": false,
+      "attributes": {
+        "0/60/0": 0,
+        "0/60/1": null,
+        "0/60/2": null,
+        "0/60/65533": 1,
+        "0/60/65532": 0,
+        "0/60/65531": [
+          0,
+          1,
+          2,
+          65533,
+          65532,
+          65531,
+          65529,
+          65528
+        ],
+        "0/60/65529": [
+          0,
+          2
+        ],
+        "0/60/65528": [],
+        "0/49/0": 1,
+        "0/49/1": [
+          {
+            "0": "UGF1bG8gMkc=",
+            "1": true
+          }
+        ],
+        "0/49/4": true,
+        "0/49/5": 0,
+        "0/49/6": "UGF1bG8gMkc=",
+        "0/49/7": null,
+        "0/49/2": 10,
+        "0/49/3": 30,
+        "0/49/8": [
+          0
+        ],
+        "0/49/65533": 2,
+        "0/49/65532": 1,
+        "0/49/65531": [
+          0,
+          1,
+          4,
+          5,
+          6,
+          7,
+          2,
+          3,
+          8,
+          65533,
+          65532,
+          65531,
+          65529,
+          65528
+        ],
+        "0/49/65529": [
+          0,
+          2,
+          4,
+          6,
+          8
+        ],
+        "0/49/65528": [
+          1,
+          5,
+          7
+        ],
+        "0/29/0": [
+          {
+            "0": 22,
+            "1": 3
+          }
+        ],
+        "0/29/1": [
+          60,
+          49,
+          29,
+          31,
+          40,
+          48,
+          51,
+          62,
+          63,
+          54,
+          53
+        ],
+        "0/29/2": [],
+        "0/29/3": [],
+        "0/29/65532": 0,
+        "0/29/65533": 3,
+        "0/29/65528": [],
+        "0/29/65529": [],
+        "0/29/65531": [
+          0,
+          1,
+          2,
+          3,
+          65532,
+          65533,
+          65528,
+          65529,
+          65531
+        ],
+        "0/31/0": [
+          {
+            "254": 1
+          },
+          {
+            "1": 5,
+            "2": 2,
+            "3": [
+              112233
+            ],
+            "4": null,
+            "254": 2
+          }
+        ],
+        "0/31/2": 4,
+        "0/31/4": 4,
+        "0/31/3": 3,
+        "0/31/65532": 0,
+        "0/31/65533": 2,
+        "0/31/65528": [],
+        "0/31/65529": [],
+        "0/31/65531": [
+          0,
+          2,
+          4,
+          3,
+          65532,
+          65533,
+          65528,
+          65529,
+          65531
+        ],
+        "0/40/65532": 0,
+        "0/40/0": 19,
+        "0/40/6": "**REDACTED**",
+        "0/40/1": "ROEHN",
+        "0/40/2": 65521,
+        "0/40/3": "roehn-matter-bridge",
+        "0/40/4": 32768,
+        "0/40/7": 0,
+        "0/40/8": "ESP32-S3 DevKitC-1 N16R8 16MB+8MBPSRAM",
+        "0/40/9": 1,
+        "0/40/10": "0.1.0",
+        "0/40/18": "EB05DC1964961369",
+        "0/40/19": {
+          "0": 3,
+          "1": 3
+        },
+        "0/40/21": 17039872,
+        "0/40/22": 1,
+        "0/40/65533": 5,
+        "0/40/5": "",
+        "0/40/65528": [],
+        "0/40/65529": [],
+        "0/40/65531": [
+          65532,
+          0,
+          6,
+          1,
+          2,
+          3,
+          4,
+          7,
+          8,
+          9,
+          10,
+          18,
+          19,
+          21,
+          22,
+          65533,
+          5,
+          65528,
+          65529,
+          65531
+        ],
+        "0/48/65532": 0,
+        "0/48/2": 0,
+        "0/48/3": 0,
+        "0/48/1": {
+          "0": 60,
+          "1": 900
+        },
+        "0/48/4": true,
+        "0/48/65533": 2,
+        "0/48/0": 0,
+        "0/48/65528": [
+          1,
+          3,
+          5
+        ],
+        "0/48/65529": [
+          0,
+          2,
+          4
+        ],
+        "0/48/65531": [
+          65532,
+          2,
+          3,
+          1,
+          4,
+          65533,
+          0,
+          65528,
+          65529,
+          65531
+        ],
+        "0/51/0": [
+          {
+            "0": "WIFI_STA_DEF",
+            "1": true,
+            "2": null,
+            "3": null,
+            "4": "RBv2/hwU",
+            "5": [
+              "CgAB7A=="
+            ],
+            "6": [
+              "/oAAAAAAAABGG/b//v4cFA=="
+            ],
+            "7": 1
+          }
+        ],
+        "0/51/1": 2,
+        "0/51/2": 190,
+        "0/51/8": false,
+        "0/51/65532": 0,
+        "0/51/65533": 2,
+        "0/51/65528": [
+          2
+        ],
+        "0/51/65529": [
+          0,
+          1
+        ],
+        "0/51/65531": [
+          0,
+          1,
+          2,
+          8,
+          65532,
+          65533,
+          65528,
+          65529,
+          65531
+        ],
+        "0/62/65532": 0,
+        "0/62/0": [
+          {
+            "1": "FTABCEIhfV018MV8JAIBNwMnFGQHxXGDyxV+GCYEAPuHMSYFAAEgVzcGJxUboNrxakzAuCcRfNqlFZDcILYmFgEAAQAsARRBbmRyb2lkIExvY2FsIEZhYnJpYxgkBwEkCAEwCUEEprqEnJpAxTSD3Ism2UPwUx+uKv9zUn/2oFLEbF1dn+tTkp9tOeQgHSVOCNhuFhtYHFyFGpOsCUa3S9uiA7pjoTcKNQEoARgkAgE2AwQCBAEYMAQUUFU7j4Ag6ZJJSS0GUjosOOKKH0swBRQniuDl2CTLYyqEp4OEmZWbBdot+hgwC0DpnQ5m7XZeFBHkIYVq4hI7GjFuW3wsm3O4SVXuyQVTkPbMCcOEHJkIBBVRldbybh1cEBx7AFmBJd8WtUw/fKViGA==",
+            "2": null,
+            "254": 1
+          },
+          {
+            "1": "FTABAQEkAgE3AyQTAhgmBIAigScmBYAlTTo3BiQVAiQRBRgkBwEkCAEwCUEEpYieqd4MfRkmIUgbl/xeuNLC/LcwEjlRUbRPPBf1BoOAeK915SZpJWbN1Jybn6+hqeB49TDdAoaQqlvEAK/m8TcKNQEoARgkAgE2AwQCBAEYMAQUYdjicFGDiNDFLlAQqzgWZuyXR80wBRQ1G6msUkByMWiTbhrXFhvUP1VGZxgwC0CK4zDXTY9TL6z2MymjH7uSruzFOIDfaXPIMlBuNCNS935u0BidpASy7/f9UuZOfsMrcPvLv7SCGiTjoBxJ3gJvGA==",
+            "2": "FTABAQEkAgE3AyQUARgmBIAigScmBYAlTTo3BiQTAhgkBwEkCAEwCUEE1TOKp2WsMXiV0aIKjWP/1J4sx7FpQ8+35y3WHM94t1wSetNFJ1uH/DZ7752ANMa1RAv8C81f/1iEih/TgflNnzcKNQEpARgkAmAwBBQ1G6msUkByMWiTbhrXFhvUP1VGZzAFFCKhX8eApLviBU6C0RB2YaNHlNmJGDALQLj/H22+xji/ARZpVCjXTDkC5PEuX16xWwSrude4Z5kQOhVgY0eZX5/gjxp/N5B4cUbkkGcr8acCxXrc6high/gY",
+            "254": 2
+          }
+        ],
+        "0/62/2": 5,
+        "0/62/3": 2,
+        "0/62/1": [
+          {
+            "1": "BAFDOZ4+CEQpcxD69SMSo4Hss+jsx0TVgI2kQeBjFfLzpvhAMxkCteMIuL1FRHpBYOH2vntnbEjlVaL9r1HXFjA=",
+            "2": 24582,
+            "3": 13312724520715067419,
+            "4": 13123731825554217596,
+            "5": "",
+            "254": 1
+          },
+          {
+            "1": "BK86Yf5mXcqWnu4/Whftle5nc2FLbaLjr8hnkx2l9JD4Zw+CBWzZchALzzc17Mieb+wlqrOHLxRVHd3eu/2DdAE=",
+            "2": 4939,
+            "3": 2,
+            "4": 5,
+            "5": "Casa",
+            "254": 2
+          }
+        ],
+        "0/62/4": [
+          "FTABAQEkAgE3AycUZAfFcYPLFX4YJgSASk8xJgWAUOdWNwYnFGQHxXGDyxV+GCQHASQIATAJQQQBQzmePghEKXMQ+vUjEqOB7LPo7MdE1YCNpEHgYxXy86b4QDMZArXjCLi9RUR6QWDh9r57Z2xI5VWi/a9R1xYwNwo1ASkBGCQCYDAEFCeK4OXYJMtjKoSng4SZlZsF2i36MAUUJ4rg5dgky2MqhKeDhJmVmwXaLfoYMAtAknH3SItzUA2i4+wsLtwQGSsbO/l+9QeQwQmHfk2ZQt/5M4ESpIcqUQYpeH4It09P6BIkcgCnlDMWeOzlj7P84Bg=",
+          "FTABAQEkAgE3AyQUARgmBIAigScmBYAlTTo3BiQUARgkBwEkCAEwCUEErzph/mZdypae7j9aF+2V7mdzYUttouOvyGeTHaX0kPhnD4IFbNlyEAvPNzXsyJ5v7CWqs4cvFFUd3d67/YN0ATcKNQEpARgkAmAwBBQioV/HgKS74gVOgtEQdmGjR5TZiTAFFCKhX8eApLviBU6C0RB2YaNHlNmJGDALQC8+tFkE8cxBde7Eq3AU8cwSTAb85o2dP58vm7t3v0S7j7iuSWoXOU0oY8Tm7Fdus5/FyGjTIPuCuOwzZkyvBVgY"
+        ],
+        "0/62/5": 2,
+        "0/62/65533": 2,
+        "0/62/65528": [
+          1,
+          3,
+          5,
+          8,
+          14
+        ],
+        "0/62/65529": [
+          0,
+          2,
+          4,
+          6,
+          7,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        "0/62/65531": [
+          65532,
+          0,
+          2,
+          3,
+          1,
+          4,
+          5,
+          65533,
+          65528,
+          65529,
+          65531
+        ],
+        "0/63/65532": 0,
+        "0/63/65533": 2,
+        "0/63/0": [],
+        "0/63/1": [],
+        "0/63/2": 508,
+        "0/63/3": 3,
+        "0/63/65528": [
+          2,
+          5
+        ],
+        "0/63/65529": [
+          0,
+          1,
+          3,
+          4
+        ],
+        "0/63/65531": [
+          65532,
+          65533,
+          0,
+          1,
+          2,
+          3,
+          65528,
+          65529,
+          65531
+        ],
+        "0/54/65532": 0,
+        "0/54/0": "foPCupaB",
+        "0/54/1": 4,
+        "0/54/2": 3,
+        "0/54/3": 6,
+        "0/54/4": -38,
+        "0/54/65533": 1,
+        "0/54/65528": [],
+        "0/54/65529": [],
+        "0/54/65531": [
+          65532,
+          0,
+          1,
+          2,
+          3,
+          4,
+          65533,
+          65528,
+          65529,
+          65531
+        ],
+        "0/53/65532": 0,
+        "0/53/0": null,
+        "0/53/1": null,
+        "0/53/2": null,
+        "0/53/3": null,
+        "0/53/4": null,
+        "0/53/5": null,
+        "0/53/7": null,
+        "0/53/8": null,
+        "0/53/9": null,
+        "0/53/10": null,
+        "0/53/11": null,
+        "0/53/12": null,
+        "0/53/13": null,
+        "0/53/59": null,
+        "0/53/60": null,
+        "0/53/61": null,
+        "0/53/62": null,
+        "0/53/65533": 3,
+        "0/53/65528": [],
+        "0/53/65529": [],
+        "0/53/65531": [
+          65532,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          59,
+          60,
+          61,
+          62,
+          65533,
+          65528,
+          65529,
+          65531
+        ]
+      },
+      "attribute_subscriptions": []
+    }
+  },
+  "issues": []
+}
