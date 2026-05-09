@@ -1757,34 +1757,78 @@ static esp_err_t app_attribute_update_cb(esp_matter::attribute::callback_type_t 
     return ESP_OK;
 }
 
+// Creates a minimal dimmable or on/off light endpoint without the optional
+// Matter "Lighting" feature attributes (StartUpOnOff, StartUpCurrentLevel,
+// GlobalSceneControl, OnTime, OffWaitTime) that HA surfaces as unwanted
+// "Power On Behavior" and "On Level" entities.
+static esp_matter::endpoint_t *create_minimal_light_endpoint(
+    esp_matter::node_t *node, bool dimmable, bool on, uint8_t level)
+{
+    using namespace esp_matter;
+    using namespace esp_matter::cluster;
+
+    endpoint_t *ep = endpoint::create(node, ENDPOINT_FLAG_BRIDGE, nullptr);
+    if (!ep) return nullptr;
+
+    uint32_t device_type_id = dimmable
+        ? ESP_MATTER_DIMMABLE_LIGHT_DEVICE_TYPE_ID
+        : ESP_MATTER_ON_OFF_LIGHT_DEVICE_TYPE_ID;
+    uint8_t device_type_version = dimmable
+        ? ESP_MATTER_DIMMABLE_LIGHT_DEVICE_TYPE_VERSION
+        : ESP_MATTER_ON_OFF_LIGHT_DEVICE_TYPE_VERSION;
+    endpoint::add_device_type(ep, device_type_id, device_type_version);
+
+    // Identify cluster (mandatory)
+    identify::config_t id_cfg = {};
+    cluster_t *identify_cluster = identify::create(ep, &id_cfg, CLUSTER_FLAG_SERVER);
+    identify::command::create_trigger_effect(identify_cluster);
+
+    // Groups cluster (mandatory for lights)
+    groups::config_t grp_cfg = {};
+    groups::create(ep, &grp_cfg, CLUSTER_FLAG_SERVER);
+
+    // OnOff cluster — no lighting feature, so no StartUpOnOff/GlobalSceneControl/OnTime/OffWaitTime
+    on_off::config_t onoff_cfg = {};
+    onoff_cfg.on_off = on;
+    cluster_t *onoff_cluster = on_off::create(ep, &onoff_cfg, CLUSTER_FLAG_SERVER);
+    on_off::command::create_on(onoff_cluster);
+    on_off::command::create_off(onoff_cluster);
+    on_off::command::create_toggle(onoff_cluster);
+
+    if (dimmable) {
+        // LevelControl cluster — on_off feature only, no lighting feature (no StartUpCurrentLevel)
+        level_control::config_t lvl_cfg = {};
+        lvl_cfg.current_level = nullable<uint8_t>(level);
+        cluster_t *lvl_cluster = level_control::create(ep, &lvl_cfg, CLUSTER_FLAG_SERVER);
+        level_control::feature::on_off::add(lvl_cluster);
+        level_control::command::create_move_to_level(lvl_cluster);
+        level_control::command::create_move(lvl_cluster);
+        level_control::command::create_step(lvl_cluster);
+        level_control::command::create_stop(lvl_cluster);
+        level_control::command::create_move_to_level_with_on_off(lvl_cluster);
+        level_control::command::create_move_with_on_off(lvl_cluster);
+        level_control::command::create_step_with_on_off(lvl_cluster);
+        level_control::command::create_stop_with_on_off(lvl_cluster);
+    }
+
+    // Scenes Management cluster (mandatory per spec)
+    scenes_management::config_t scn_cfg = {};
+    cluster_t *scenes_cluster = scenes_management::create(ep, &scn_cfg, CLUSTER_FLAG_SERVER);
+    scenes_management::command::create_copy_scene(scenes_cluster);
+    scenes_management::command::create_copy_scene_response(scenes_cluster);
+
+    return ep;
+}
+
 void create_light_endpoints(esp_matter::node_t *node)
 {
     for (uint8_t i = 0; i < g_config.light_count; ++i) {
-        esp_matter::endpoint_t *endpoint = nullptr;
-
-        if (g_config.lights[i].supports_brightness) {
-            esp_matter::endpoint::dimmable_light::config_t config = {};
-            config.on_off.on_off = g_light_states[i].on;
-            config.level_control.current_level =
-                nullable<uint8_t>(level_percent_to_matter(g_light_states[i].level_percent));
-
-            endpoint = esp_matter::endpoint::dimmable_light::create(
-                node,
-                &config,
-                esp_matter::ENDPOINT_FLAG_BRIDGE,
-                nullptr
-            );
-        } else {
-            esp_matter::endpoint::on_off_light::config_t config = {};
-            config.on_off.on_off = g_light_states[i].on;
-
-            endpoint = esp_matter::endpoint::on_off_light::create(
-                node,
-                &config,
-                esp_matter::ENDPOINT_FLAG_BRIDGE,
-                nullptr
-            );
-        }
+        esp_matter::endpoint_t *endpoint = create_minimal_light_endpoint(
+            node,
+            g_config.lights[i].supports_brightness,
+            g_light_states[i].on,
+            level_percent_to_matter(g_light_states[i].level_percent)
+        );
 
         if (!endpoint) {
             ESP_LOGE(kTag, "Failed to create endpoint for %s", g_config.lights[i].name);
