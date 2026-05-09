@@ -184,6 +184,16 @@ EXT_RAM_BSS_ATTR ResourcesIndex g_resources;
 EXT_RAM_BSS_ATTR GatewayRuntime g_gateway;
 bool g_matter_started = false;
 
+// Persistent TCP connection for Roehn gateway command/event channel (port 23).
+// Mirrors the architecture in the roehn_dinplug reference: a single long-lived
+// telnet connection is used for both sending commands and receiving real-time
+// feedback events such as R:LOAD, R:SHADE, R:BTN etc.
+static int g_event_sock = -1;
+static SemaphoreHandle_t g_event_lock = nullptr;  // protects g_event_sock writes
+static TaskHandle_t g_event_task_handle = nullptr;
+static constexpr int kEventReconnectDelayMs = 5000;
+static constexpr int kEventRecvTimeoutMs = 250;   // poll interval while idle
+
 static const FallbackDriverSpec kFallbackLightDrivers[] = {
     {59, "RL12", "ADP-RL12", 1, 1, 12},
     {60, "DIM8", "ADP-DIM8", 2, 1, 8},
@@ -924,16 +934,16 @@ bool send_text_command_lines(const char *host, uint16_t port, const char *comman
         return false;
     }
 
-    struct timeval timeout = {
-        .tv_sec = kDefaultCommandConnectTimeoutMs / 1000,
-        .tv_usec = (kDefaultCommandConnectTimeoutMs % 1000) * 1000,
+    // Use the response timeout for socket I/O, not the (much longer) connect timeout.
+    struct timeval rw_timeout = {
+        .tv_sec = kDefaultCommandResponseTimeoutMs / 1000,
+        .tv_usec = (kDefaultCommandResponseTimeoutMs % 1000) * 1000,
     };
-    setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
-    setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout));
+    setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, &rw_timeout, sizeof(rw_timeout));
+    setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, &rw_timeout, sizeof(rw_timeout));
 
     bool ok = false;
     if (connect_with_timeout(sock, result, kDefaultCommandConnectTimeoutMs)) {
-        char scratch[512] = {};
         ESP_LOGI(kTag, "TCP SEND: %s", command);
 
         if (send_socket_line(sock, command)) {
@@ -971,27 +981,258 @@ bool parse_load_line(const char *line, uint16_t *address, uint8_t *channel, uint
     return true;
 }
 
+// ── Persistent TCP connection helpers (mirrors roehn_dinplug architecture) ────────
+// The Roehn gateway accepts only ONE TCP connection on port 23.  All commands AND
+// event feedback flow through this single persistent socket.  g_event_lock (mutex)
+// serialises all socket I/O so the event-listener task and the command task never
+// race on recv().
+
+static void close_event_socket()
+{
+    if (g_event_lock) {
+        xSemaphoreTake(g_event_lock, portMAX_DELAY);
+    }
+    if (g_event_sock >= 0) {
+        close(g_event_sock);
+        g_event_sock = -1;
+    }
+    if (g_event_lock) {
+        xSemaphoreGive(g_event_lock);
+    }
+}
+
+// Send a CRLF-terminated line and read the response through the persistent socket.
+// Returns true if the command was written to the socket; *out_lines receives any
+// text that came back before the deadline.
+static bool send_command_persistent(const char *command, char *out_lines, size_t out_size)
+{
+    if (!command || !out_lines || out_size == 0) {
+        return false;
+    }
+    out_lines[0] = '\0';
+
+    // Acquire the socket lock — the event listener will wait.
+    if (!g_event_lock || xSemaphoreTake(g_event_lock, pdMS_TO_TICKS(3000)) != pdTRUE) {
+        ESP_LOGW(kTag, "Persistent socket lock timeout for '%s'", command);
+        return false;
+    }
+
+    bool ok = false;
+    if (g_event_sock >= 0) {
+        // Send
+        char payload[96];
+        snprintf(payload, sizeof(payload), "%s\r\n", command);
+        if (send(g_event_sock, payload, strlen(payload), 0) >= 0) {
+            ok = true;
+
+            // Read response with a short deadline
+            struct timeval orig_tv;
+            socklen_t optlen = sizeof(orig_tv);
+            getsockopt(g_event_sock, SOL_SOCKET, SO_RCVTIMEO, &orig_tv, &optlen);
+
+            struct timeval short_tv = {
+                .tv_sec = kDefaultCommandResponseTimeoutMs / 1000,
+                .tv_usec = (kDefaultCommandResponseTimeoutMs % 1000) * 1000,
+            };
+            setsockopt(g_event_sock, SOL_SOCKET, SO_RCVTIMEO, &short_tv, sizeof(short_tv));
+
+            size_t offset = 0;
+            const int64_t deadline_us = esp_timer_get_time() + static_cast<int64_t>(kDefaultCommandResponseTimeoutMs) * 1000;
+            while (offset + 1 < out_size && esp_timer_get_time() < deadline_us) {
+                const ssize_t n = recv(g_event_sock, out_lines + offset, out_size - offset - 1, 0);
+                if (n > 0) {
+                    offset += static_cast<size_t>(n);
+                    out_lines[offset] = '\0';
+                    continue;
+                }
+                if (n == 0 || errno == ECONNRESET || errno == ENOTCONN) {
+                    break;
+                }
+                if (errno == EWOULDBLOCK || errno == EAGAIN) {
+                    break;
+                }
+                break; // hard error
+            }
+
+            setsockopt(g_event_sock, SOL_SOCKET, SO_RCVTIMEO, &orig_tv, sizeof(orig_tv));
+        }
+    }
+
+    xSemaphoreGive(g_event_lock);
+
+    if (!ok || g_event_sock < 0) {
+        // Persistent path not available — try a short-lived connection as fallback
+        ESP_LOGW(kTag, "Persistent socket unavailable, falling back to short-lived TCP for '%s'", command);
+        return send_text_command_lines(g_config.gateway_host, kDefaultCommandPort, command, out_lines, out_size);
+    }
+    return ok;
+}
+
 esp_err_t roehn_set_load(const LightConfig &light, uint8_t level_percent)
 {
     char command[64];
-
     const uint8_t level = std::min<uint8_t>(100, level_percent);
-
     snprintf(command, sizeof(command), "LOAD %u %u %u",
              static_cast<unsigned>(resolve_control_address(light)),
              static_cast<unsigned>(light.channel),
              static_cast<unsigned>(level));
-
     ESP_LOGI(kTag, "ROEHN TX: %s", command);
 
     char lines[1024] = {};
-    if (!send_text_command_lines(g_config.gateway_host, kDefaultCommandPort, command, lines, sizeof(lines))) {
+    if (!send_command_persistent(command, lines, sizeof(lines))) {
         ESP_LOGW(kTag, "ROEHN LOAD failed: cmd='%s' rx='%s'", command, lines);
         return ESP_FAIL;
     }
-
-    ESP_LOGI(kTag, "ROEHN LOAD sent: cmd='%s' rx='%s'", command, lines);
+    ESP_LOGI(kTag, "ROEHN LOAD sent: cmd='%s' rx='%s'", command, lines[0] ? lines : "(none)");
     return ESP_OK;
+}
+
+// ── Event listener task ──────────────────────────────────────────────────────────
+
+static void sync_light_state_to_matter(uint8_t index);
+
+// Parse a single feedback line received from the gateway and update state.
+static void process_event_line(const char *line)
+{
+    if (!line || !line[0]) {
+        return;
+    }
+
+    // R:LOAD <device_address> <channel> <level>
+    if (strncmp(line, "R:LOAD ", 7) == 0) {
+        uint16_t address = 0;
+        uint8_t channel = 0;
+        uint8_t level = 0;
+        if (!parse_load_line(line, &address, &channel, &level)) {
+            return;
+        }
+
+        for (uint8_t i = 0; i < g_config.light_count; ++i) {
+            if (resolve_control_address(g_config.lights[i]) == address &&
+                g_config.lights[i].channel == channel) {
+                g_light_states[i].level_percent = level;
+                g_light_states[i].on = level > 0;
+                sync_light_state_to_matter(i);
+                ESP_LOGI(kTag, "Event R:LOAD addr=%u ch=%u level=%u → light[%u] '%s'",
+                         static_cast<unsigned>(address),
+                         static_cast<unsigned>(channel),
+                         static_cast<unsigned>(level),
+                         static_cast<unsigned>(i),
+                         g_config.lights[i].name);
+                break;
+            }
+        }
+    }
+}
+
+static void event_listener_task(void *)
+{
+    ESP_LOGI(kTag, "Roehn event listener task started");
+
+    while (true) {
+        // Ensure clean state before connecting.
+        close_event_socket();
+
+        if (!g_config.gateway_host[0]) {
+            ESP_LOGI(kTag, "Event listener: no gateway configured, waiting...");
+            vTaskDelay(pdMS_TO_TICKS(kEventReconnectDelayMs));
+            continue;
+        }
+
+        // Connect to the Roehn gateway telnet port.
+        struct addrinfo hints = {};
+        hints.ai_family = AF_INET;
+        hints.ai_socktype = SOCK_STREAM;
+        char port_text[8];
+        snprintf(port_text, sizeof(port_text), "%u", static_cast<unsigned>(kDefaultCommandPort));
+
+        struct addrinfo *result = nullptr;
+        if (getaddrinfo(g_config.gateway_host, port_text, &hints, &result) != 0 || !result) {
+            ESP_LOGW(kTag, "Event listener: DNS resolution failed for %s, retrying in %d ms",
+                     g_config.gateway_host, kEventReconnectDelayMs);
+            vTaskDelay(pdMS_TO_TICKS(kEventReconnectDelayMs));
+            continue;
+        }
+
+        int sock = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
+        if (sock < 0) {
+            freeaddrinfo(result);
+            ESP_LOGW(kTag, "Event listener: socket() failed, retrying in %d ms", kEventReconnectDelayMs);
+            vTaskDelay(pdMS_TO_TICKS(kEventReconnectDelayMs));
+            continue;
+        }
+
+        if (!connect_with_timeout(sock, result, kDefaultCommandConnectTimeoutMs)) {
+            close(sock);
+            freeaddrinfo(result);
+            ESP_LOGW(kTag, "Event listener: connect to %s:%u failed, retrying in %d ms",
+                     g_config.gateway_host, static_cast<unsigned>(kDefaultCommandPort), kEventReconnectDelayMs);
+            vTaskDelay(pdMS_TO_TICKS(kEventReconnectDelayMs));
+            continue;
+        }
+
+        freeaddrinfo(result);
+
+        // Publish the socket for command use.
+        if (g_event_lock) {
+            xSemaphoreTake(g_event_lock, portMAX_DELAY);
+        }
+        g_event_sock = sock;
+        if (g_event_lock) {
+            xSemaphoreGive(g_event_lock);
+        }
+
+        ESP_LOGI(kTag, "Event listener connected to %s:%u",
+                 g_config.gateway_host, static_cast<unsigned>(kDefaultCommandPort));
+
+        // Read lines indefinitely — use MSG_DONTWAIT so we never block while
+        // holding the socket lock.  The command path acquires the same lock,
+        // sends a command, reads the response, and releases.
+        char buffer[1024];
+        size_t buf_len = 0;
+
+        while (true) {
+            // Try to acquire the lock.  If a command is in flight we wait briefly.
+            if (!g_event_lock || xSemaphoreTake(g_event_lock, pdMS_TO_TICKS(100)) != pdTRUE) {
+                vTaskDelay(pdMS_TO_TICKS(10));
+                continue;
+            }
+
+            char ch;
+            const ssize_t n = recv(sock, &ch, 1, MSG_DONTWAIT);
+
+            if (n > 0) {
+                xSemaphoreGive(g_event_lock);
+                if (ch == '\n') {
+                    if (buf_len > 0 && buffer[buf_len - 1] == '\r') {
+                        buf_len--;
+                    }
+                    buffer[buf_len] = '\0';
+                    if (buf_len > 0) {
+                        ESP_LOGI(kTag, "EVENT RX: %s", buffer);
+                        process_event_line(buffer);
+                    }
+                    buf_len = 0;
+                } else if (buf_len + 1 < sizeof(buffer)) {
+                    buffer[buf_len++] = ch;
+                }
+            } else {
+                xSemaphoreGive(g_event_lock);
+                if (n == 0 || errno == ECONNRESET || errno == ENOTCONN) {
+                    ESP_LOGW(kTag, "Event listener: connection closed by gateway");
+                    vTaskDelay(pdMS_TO_TICKS(500));
+                    break;
+                } else if (errno != EWOULDBLOCK && errno != EAGAIN) {
+                    ESP_LOGW(kTag, "Event listener: recv error %d, reconnecting", errno);
+                    vTaskDelay(pdMS_TO_TICKS(500));
+                    break;
+                }
+                vTaskDelay(pdMS_TO_TICKS(50)); // idle
+            }
+        }
+
+        // Socket will be cleaned up at top of loop.
+    }
 }
 
 bool roehn_query_load(const LightConfig &light, uint8_t *out_level)
@@ -1001,7 +1242,7 @@ bool roehn_query_load(const LightConfig &light, uint8_t *out_level)
              static_cast<unsigned>(light.channel));
 
     char lines[1024] = {};
-    if (!send_text_command_lines(g_config.gateway_host, kDefaultCommandPort, command, lines, sizeof(lines))) {
+    if (!send_command_persistent(command, lines, sizeof(lines))) {
         return false;
     }
 
@@ -1725,6 +1966,20 @@ static esp_err_t app_attribute_update_cb(esp_matter::attribute::callback_type_t 
                attribute_id == chip::app::Clusters::LevelControl::Attributes::CurrentLevel::Id &&
                g_config.lights[index].supports_brightness) {
         const uint8_t percent = matter_to_level_percent(val->val.u8);
+        // The ZCL OnOff-coupling side-effect always writes CurrentLevel=0 when
+        // turning on (then restores it) and CurrentLevel=stored when turning
+        // off. Both are spurious — the OnOff callback already queued the
+        // correct command. Detect and ignore both cases:
+        //   - percent==0 while on==true  : ZCL coupling "on" side-effect
+        //   - percent>0  while on==false : ZCL coupling "off" side-effect
+        // Only act on CurrentLevel when it agrees with the current on-state,
+        // which is the case for genuine MoveToLevel commands.
+        if (percent == 0 && next.on) {
+            return ESP_OK;
+        }
+        if (percent > 0 && !next.on) {
+            return ESP_OK;
+        }
         next.level_percent = percent;
         next.on = percent > 0;
         changed = true;
@@ -1904,7 +2159,7 @@ esp_err_t config_get_handler(httpd_req_t *req)
 
 esp_err_t status_get_handler(httpd_req_t *req)
 {
-    refresh_gateway_runtime(true);
+    refresh_gateway_runtime(false);
 
     cJSON *root = cJSON_CreateObject();
     cJSON *gateway = cJSON_AddObjectToObject(root, "gateway");
@@ -2127,6 +2382,7 @@ extern "C" void app_main()
     ESP_LOGI(kTag, "DEBUG C: Matter stack started");
 
     g_command_queue = xQueueCreate(8, sizeof(PendingLoadCommand));
+    g_event_lock = xSemaphoreCreateMutex();
     if (!g_command_queue) {
         ESP_LOGE(kTag, "Failed to create Roehn command queue; Matter state will update but gateway commands will be dropped");
     } else if (!g_command_task) {
@@ -2134,6 +2390,15 @@ extern "C" void app_main()
         if (task_created != pdPASS) {
             ESP_LOGE(kTag, "Failed to create Roehn command task");
             g_command_task = nullptr;
+        }
+    }
+
+    // Start persistent event listener for real-time R:LOAD feedback from the gateway.
+    if (!g_event_task_handle) {
+        const BaseType_t task_created = xTaskCreate(event_listener_task, "roehn_evt", 6144, nullptr, 4, &g_event_task_handle);
+        if (task_created != pdPASS) {
+            ESP_LOGE(kTag, "Failed to create Roehn event listener task");
+            g_event_task_handle = nullptr;
         }
     }
 
