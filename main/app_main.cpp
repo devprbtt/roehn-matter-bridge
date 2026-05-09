@@ -1771,7 +1771,7 @@ void create_light_endpoints(esp_matter::node_t *node)
             endpoint = esp_matter::endpoint::dimmable_light::create(
                 node,
                 &config,
-                esp_matter::ENDPOINT_FLAG_NONE,
+                esp_matter::ENDPOINT_FLAG_BRIDGE,
                 nullptr
             );
         } else {
@@ -1781,7 +1781,7 @@ void create_light_endpoints(esp_matter::node_t *node)
             endpoint = esp_matter::endpoint::on_off_light::create(
                 node,
                 &config,
-                esp_matter::ENDPOINT_FLAG_NONE,
+                esp_matter::ENDPOINT_FLAG_BRIDGE,
                 nullptr
             );
         }
@@ -2049,6 +2049,20 @@ extern "C" void app_main()
     esp_matter::node::config_t node_config = {};
     esp_matter::node_t *node = esp_matter::node::create(&node_config, app_attribute_update_cb, app_identification_cb);
     ESP_ERROR_CHECK(node ? ESP_OK : ESP_FAIL);
+
+    // Create the aggregator endpoint (device type 0x000E) on endpoint 1.
+    // Home Assistant uses this to detect is_bridge=true and discover all
+    // child bridged endpoints via the Descriptor Parts List.
+    {
+        esp_matter::endpoint::aggregator::config_t agg_config = {};
+        esp_matter::endpoint_t *agg_ep = esp_matter::endpoint::aggregator::create(
+            node, &agg_config, esp_matter::ENDPOINT_FLAG_NONE, nullptr);
+        if (!agg_ep) {
+            ESP_LOGE(kTag, "Failed to create aggregator endpoint");
+        } else {
+            ESP_LOGI(kTag, "Aggregator endpoint created id=%u", esp_matter::endpoint::get_id(agg_ep));
+        }
+    }
 
     // Create endpoints BEFORE starting Matter so they are visible during
     // the initial HA interview. ESP_MATTER_MEM_ALLOC_MODE_EXTERNAL ensures
