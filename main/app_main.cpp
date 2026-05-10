@@ -147,6 +147,8 @@ struct AppConfig {
     char gateway_ip[16];
     uint8_t light_count;
     LightConfig *lights; // allocated on heap (preferably PSRAM)
+    uint8_t module_count;
+    uint16_t module_parent_ids[32]; // stable bridged_node endpoint IDs per module
 };
 
 struct LightState {
@@ -211,27 +213,48 @@ static const char kSetupPageHtml[] = R"html(<!doctype html>
 *{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue",sans-serif;color:var(--ink);background:radial-gradient(circle at 15% 10%,#fff3d8 0 14%,transparent 36%),radial-gradient(circle at 88% 12%,#d8efff 0 16%,transparent 38%),linear-gradient(145deg,#f8f4ea 0%,#eef6ff 46%,#edf7f0 100%);display:grid;place-items:center;padding:24px}
 body:before{content:"";position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,.34) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.28) 1px,transparent 1px);background-size:44px 44px;mask-image:linear-gradient(to bottom,rgba(0,0,0,.45),transparent 72%);pointer-events:none}
 .shell{width:min(1100px,100%)}.hero{display:grid;grid-template-columns:1.02fr .98fr;gap:22px;align-items:stretch}.panel,.preview{background:var(--card);border:1px solid rgba(255,255,255,.72);box-shadow:var(--shadow);backdrop-filter:blur(24px) saturate(1.15);-webkit-backdrop-filter:blur(24px) saturate(1.15);border-radius:34px}
-.panel{padding:30px}.preview{padding:24px;display:flex;flex-direction:column;gap:18px;min-height:620px;position:relative;overflow:hidden}.preview:before{content:"";position:absolute;inset:auto -90px -120px auto;width:320px;height:320px;border-radius:50%;background:linear-gradient(135deg,#f7c66a,#7ed7a8 48%,#56a4ff);filter:blur(8px);opacity:.35}
+.panel{padding:30px}.preview{padding:24px;display:flex;flex-direction:column;gap:18px;min-height:620px;position:relative;overflow:hidden;overflow-y:auto;max-height:calc(100vh - 48px)}.preview:before{content:"";position:absolute;inset:auto -90px -120px auto;width:320px;height:320px;border-radius:50%;background:linear-gradient(135deg,#f7c66a,#7ed7a8 48%,#56a4ff);filter:blur(8px);opacity:.35;pointer-events:none;z-index:0}
 .eyebrow{display:inline-flex;align-items:center;gap:8px;margin:0 0 18px;padding:7px 12px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid var(--line);font-size:13px;color:var(--muted);font-weight:650}.dot{width:8px;height:8px;border-radius:999px;background:var(--amber);box-shadow:0 0 0 5px rgba(197,123,0,.13)}.dot.good{background:var(--green);box-shadow:0 0 0 5px rgba(24,160,88,.13)}.dot.bad{background:var(--red);box-shadow:0 0 0 5px rgba(207,46,46,.13)}
 h1{font-size:clamp(34px,6vw,64px);line-height:.94;letter-spacing:-.06em;margin:0 0 14px}.sub{font-size:18px;line-height:1.45;color:var(--muted);margin:0 0 28px;max-width:600px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field{display:grid;gap:10px;margin:0 0 18px}.label{font-size:13px;text-transform:uppercase;letter-spacing:.12em;color:#8b95a5;font-weight:800}
 input{width:100%;border:1px solid var(--line);background:rgba(255,255,255,.78);border-radius:20px;padding:16px 18px;font:700 18px/1.1 -apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;color:var(--ink);outline:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.8)}
 .actions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:6px}button{border:0;border-radius:20px;padding:16px 18px;font-weight:800;font-size:16px;cursor:pointer;transition:.18s ease;box-shadow:0 12px 30px rgba(19,32,51,.12)}button:active{transform:scale(.98)}button:disabled{opacity:.55;cursor:not-allowed}.primary{background:var(--blue);color:white}.secondary{background:rgba(255,255,255,.8);color:#141a24;border:1px solid var(--line)}
-.status{min-height:48px;margin-top:18px;padding:14px 16px;border-radius:18px;background:rgba(255,255,255,.58);border:1px solid var(--line);color:var(--muted);line-height:1.35}.status.good{color:#14783c;background:rgba(24,160,88,.11)}.status.bad{color:#b42318;background:rgba(207,46,46,.11)}
+.status{min-height:48px;margin-top:18px;padding:14px 16px;border-radius:18px;background:rgba(255,255,255,.58);border:1px solid var(--line);color:var(--muted);line-height:1.35}.status.good{color:#14783c;background:rgba(24,160,88,.11)}.status.bad{color:#b42318;background:rgba(207,46,46,.11)}.status.info{color:var(--blue);background:rgba(18,115,234,.11)}
 .card{position:relative;border-radius:28px;background:linear-gradient(180deg,#fdfdfd,#f2f5f8);border:1px solid rgba(255,255,255,.92);box-shadow:inset 0 1px 0 #fff,0 18px 42px rgba(19,32,51,.12);padding:20px}.pill{display:inline-flex;gap:7px;align-items:center;border-radius:999px;background:#132033;color:white;padding:9px 12px;font-size:13px;font-weight:750}
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}.tile{background:rgba(255,255,255,.76);border:1px solid var(--line);border-radius:20px;padding:14px}.tile b{display:block;font-size:24px;letter-spacing:-.05em}.tile span{display:block;margin-top:4px;color:var(--muted);font-size:13px}
 .meta{display:grid;gap:8px;margin-top:16px;font-size:14px;color:var(--muted)}.meta strong{color:var(--ink)}
-.list{display:grid;gap:10px;position:relative;z-index:1}.entity{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:14px 16px;border-radius:18px;background:rgba(255,255,255,.75);border:1px solid var(--line)}.entity b{display:block;font-size:16px}.entity span{display:block;margin-top:3px;color:var(--muted);font-size:13px}.badge{display:inline-flex;align-items:center;justify-content:center;min-width:84px;padding:8px 10px;border-radius:999px;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;background:#132033;color:white}.badge.dim{background:#1273ea}.badge.empty{background:#8b95a5}
-@media(max-width:860px){body{padding:14px;place-items:start center}.hero{grid-template-columns:1fr}.panel,.preview{border-radius:28px}.panel{padding:22px}.actions,.grid,.stats{grid-template-columns:1fr}}
+.list{display:grid;gap:10px;position:relative;z-index:1}
+.module-group{border-radius:20px;background:rgba(255,255,255,.5);border:1px solid var(--line);overflow:hidden;position:relative;z-index:1}
+.module-header{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:14px 16px;cursor:pointer;user-select:none;background:rgba(255,255,255,.72);transition:background .15s}
+.module-header:hover{background:rgba(255,255,255,.92)}
+.module-header b{font-size:16px}.module-header .arrow{font-size:14px;color:var(--muted);transition:transform .2s;min-width:20px;text-align:center}
+.module-header.open .arrow{transform:rotate(90deg)}
+.module-channels{display:none;border-top:1px solid var(--line);padding:6px 8px}
+.module-channels.open{display:grid;gap:4px}
+.module-meta{font-size:12px;color:var(--muted);padding:0 16px 10px;margin-top:-4px}
+.entity{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:10px 14px;border-radius:14px;background:rgba(255,255,255,.6);border:1px solid transparent;margin:0 4px}.entity:hover{background:rgba(255,255,255,.92);border-color:var(--line)}
+.entity b{display:block;font-size:15px}.entity span{display:block;margin-top:2px;color:var(--muted);font-size:12px}
+.badge{display:inline-flex;align-items:center;justify-content:center;min-width:76px;padding:6px 10px;border-radius:999px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;background:#132033;color:#fff}.badge.dim{background:#1273ea;color:#fff}.badge.relay{background:#6f42c1;color:#fff}.badge.empty{background:#8b95a5;color:#fff}
+.empty-state{text-align:center;padding:24px;color:var(--muted)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{display:inline-block;width:20px;height:20px;border:2.5px solid var(--line);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
+.overlay{position:fixed;inset:0;background:rgba(19,32,51,.6);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;gap:16px}
+.overlay .msg{color:#fff;font-size:20px;font-weight:700}.overlay .timer{color:rgba(255,255,255,.7);font-size:16px}.overlay .spinner{width:36px;height:36px;border-width:4px;border-top-color:#fff;border-color:rgba(255,255,255,.2);border-top-color:#fff}
+@media(max-width:860px){body{padding:14px;place-items:start center}.hero{grid-template-columns:1fr}.panel,.preview{border-radius:28px}.panel{padding:22px}.actions,.grid,.stats{grid-template-columns:1fr}.module-header{grid-template-columns:1fr auto auto}}
 </style>
 </head>
 <body>
+<div class="overlay" id="rebootOverlay" style="display:none">
+<span class="spinner"></span>
+<span class="msg">Discovery complete!</span>
+<span class="timer" id="rebootTimer">Rebooting in 5 seconds...</span>
+</div>
 <main class="shell">
 <section class="hero">
 <div class="panel">
 <p class="eyebrow"><span id="dot" class="dot"></span><span id="connectivity">Gateway status unknown</span></p>
-<h1>Set up your ROEHN bridge</h1>
-<p class="sub">Configure the ROEHN gateway, run discovery, and persist the light endpoints this Matter bridge should expose as on/off or dimmable lights.</p>
+<h1>ROEHN Matter Bridge</h1>
+<p class="sub">Configure the ROEHN M16 gateway, discover connected DIN modules, and expose their light channels as Matter endpoints.</p>
 <div class="grid">
 <div class="field">
 <span class="label">Gateway Host</span>
@@ -257,7 +280,7 @@ input{width:100%;border:1px solid var(--line);background:rgba(255,255,255,.78);b
 <span class="pill">ROEHN Matter Bridge</span>
 <div class="stats">
 <div class="tile"><b id="lightCount">0</b><span>Discovered lights</span></div>
-<div class="tile"><b id="fabricCount">0</b><span>Paired fabrics</span></div>
+<div class="tile"><b id="moduleCount">0</b><span>Modules</span></div>
 </div>
 <div class="meta">
 <div><strong>Gateway:</strong> <span id="gatewayName">Not configured</span></div>
@@ -271,34 +294,77 @@ input{width:100%;border:1px solid var(--line);background:rgba(255,255,255,.78);b
 </section>
 </main>
 <script>
-const els={dot:document.querySelector("#dot"),connectivity:document.querySelector("#connectivity"),host:document.querySelector("#host"),port:document.querySelector("#port"),scanInterval:document.querySelector("#scanInterval"),saveBtn:document.querySelector("#saveBtn"),discoverBtn:document.querySelector("#discoverBtn"),status:document.querySelector("#status"),lightCount:document.querySelector("#lightCount"),fabricCount:document.querySelector("#fabricCount"),gatewayName:document.querySelector("#gatewayName"),gatewayIp:document.querySelector("#gatewayIp"),gatewayVersion:document.querySelector("#gatewayVersion"),lastRefresh:document.querySelector("#lastRefresh"),entities:document.querySelector("#entities")};
-let config=null,statusData=null,busy=false,formDirty=false;
-function setStatus(text,type=""){els.status.textContent=text;els.status.className=`status ${type}`;}
+const els={dot:document.querySelector("#dot"),connectivity:document.querySelector("#connectivity"),host:document.querySelector("#host"),port:document.querySelector("#port"),scanInterval:document.querySelector("#scanInterval"),saveBtn:document.querySelector("#saveBtn"),discoverBtn:document.querySelector("#discoverBtn"),status:document.querySelector("#status"),lightCount:document.querySelector("#lightCount"),moduleCount:document.querySelector("#moduleCount"),gatewayName:document.querySelector("#gatewayName"),gatewayIp:document.querySelector("#gatewayIp"),gatewayVersion:document.querySelector("#gatewayVersion"),lastRefresh:document.querySelector("#lastRefresh"),entities:document.querySelector("#entities"),rebootOverlay:document.querySelector("#rebootOverlay"),rebootTimer:document.querySelector("#rebootTimer")};
+let config=null,statusData=null,busy=false,formDirty=false,rebooting=false,lastLightsJson="";
+function setStatus(text,type=""){els.status.innerHTML=text;els.status.className=`status ${type}`;}
 function stampToText(ms){if(!ms)return"Never";const sec=Math.max(0,Math.round(ms/1000));if(sec<5)return"Just now";if(sec<60)return`${sec}s ago`;const min=Math.round(sec/60);if(min<60)return`${min}m ago`;const hr=Math.round(min/60);return`${hr}h ago`;}
 function syncField(el,value){
  if(document.activeElement===el||formDirty)return;
  el.value=value;
 }
 function render(){
+ if(rebooting)return;
  const gw=config?.gateway||{}, stat=statusData?.gateway||{}, lights=statusData?.lights||config?.lights||[];
  syncField(els.host,gw.host||"");syncField(els.port,String(gw.port||2006));syncField(els.scanInterval,String(gw.scan_interval||30));
  els.lightCount.textContent=String(lights.length||0);
- els.fabricCount.textContent=String(statusData?.matter?.fabric_count||0);
+ // Only rebuild entity list when lights data changes (prevents collapsible reset)
+ const lightsJson=JSON.stringify(lights);
+ if(lightsJson!==lastLightsJson){
+  lastLightsJson=lightsJson;
+  // Group lights by module address
+  const modules={};
+  lights.forEach(l=>{const a=l.control_address||l.name?.split('-')[0]||'?';if(!modules[a]){modules[a]={addr:a,name:l.name?.replace(/-\\d+$/,'')||`Module ${a}`,model:l.model||"",lights:[]};}modules[a].lights.push(l);});
+  els.moduleCount.textContent=String(Object.keys(modules).length);
+  if(lights.length){
+   let html="";
+   for(const [addr,mod] of Object.entries(modules)){
+    const nChannels=mod.lights.length;
+    html+=`<div class="module-group"><div class="module-header" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open')"><b>${mod.name}</b><span style="font-size:12px;color:var(--muted)">${nChannels} ch</span><span class="arrow">▶</span></div><div class="module-channels">`;
+    mod.lights.forEach(l=>{const badgeCls=l.supports_brightness?"dim":"relay";const badgeTxt=l.supports_brightness?"Dimmer":"Relay";html+=`<div class="entity"><div><b>${l.name}</b><span>Ch ${l.channel}${l.endpoint_id?` • EP ${l.endpoint_id}`:''}</span></div><span class="badge ${badgeCls}">${badgeTxt}</span></div>`;});
+    html+=`</div></div>`;
+   }
+   els.entities.innerHTML=html;
+  }else{
+   els.entities.innerHTML='<div class="empty-state"><b>No lights discovered yet</b><p>Save the gateway, then run discovery to build Matter light endpoints.</p></div>';
+  }
+ }
+ const connected=!!stat.connected;
+ els.connectivity.textContent=connected?"Gateway reachable":"Gateway offline or not configured";
+ els.dot.className=`dot ${connected?"good":(gw.host?"bad":"")}`;
  els.gatewayName.textContent=stat.name||gw.name||"Not configured";
  els.gatewayIp.textContent=stat.ip||gw.gateway_ip||"-";
  els.gatewayVersion.textContent=stat.version||"-";
  els.lastRefresh.textContent=stampToText(stat.last_refresh_ms||0);
- const connected=!!stat.connected;
- els.connectivity.textContent=connected?"Gateway reachable":"Gateway offline or not configured";
- els.dot.className=`dot ${connected?"good":(gw.host?"bad":"")}`;
- els.entities.innerHTML=lights.length?lights.map(light=>`<div class="entity"><div><b>${light.name}</b><span>${light.model||"Unknown model"} • channel ${light.channel} • endpoint ${light.endpoint_id||"-"}${light.control_address?` • addr ${light.control_address}`:""}</span></div><span class="badge ${light.supports_brightness?"dim":""}">${light.supports_brightness?"Dimmer":"On/Off"}</span></div>`).join(""):'<div class="entity"><div><b>No lights discovered yet</b><span>Save the gateway, then run discovery to build Matter light endpoints.</span></div><span class="badge empty">Empty</span></div>';
+}
+let reconnectAttempts=0;
+async function fetchWithRetry(url,opts={},maxRetries=2){
+ for(let i=0;i<=maxRetries;i++){
+  try{
+   const ctrl=new AbortController();const t=setTimeout(()=>ctrl.abort(),4000);
+   const res=await fetch(url,{...opts,signal:ctrl.signal,cache:"no-store"});clearTimeout(t);
+   return res;
+  }catch(e){if(i<maxRetries){await new Promise(r=>setTimeout(r,800));}}
+ }
+ throw new Error("fetch failed");
 }
 async function loadAll(announce=false){
+ if(rebooting)return;
+ let ok=false;
  try{
-  const [cfgRes,statRes]=await Promise.all([fetch("/api/config",{cache:"no-store"}),fetch("/api/status",{cache:"no-store"})]);
-  config=await cfgRes.json();statusData=await statRes.json();render();
+  const cfgRes=await fetchWithRetry("/api/config");
+  if(cfgRes.ok){config=await cfgRes.json();ok=true;}
+ }catch(e){}
+ try{
+  const statRes=await fetchWithRetry("/api/status");
+  if(statRes.ok){statusData=await statRes.json();ok=true;}
+ }catch(e){}
+ if(ok){
+  render();reconnectAttempts=0;
   if(announce)setStatus("Bridge configuration loaded.");
- }catch(e){setStatus("Could not load bridge status. Make sure the device is reachable on Wi-Fi.","bad");}
+ }else{
+  reconnectAttempts++;
+  if(reconnectAttempts>=8)setStatus(`<span class="spinner"></span> Waiting for bridge… (${reconnectAttempts})`,"info");
+ }
 }
 function payload(){return{gateway:{host:els.host.value.trim(),port:Number(els.port.value||2006),scan_interval:Number(els.scanInterval.value||30)}}}
 async function saveConfig(){
@@ -311,23 +377,33 @@ async function saveConfig(){
  finally{busy=false;}
 }
 async function discover(){
- busy=true;setStatus("Talking to the ROEHN gateway and discovering lights...");
+ busy=true;els.discoverBtn.disabled=true;els.saveBtn.disabled=true;
+ setStatus('<span class="spinner"></span> Talking to the ROEHN gateway and discovering modules...',"info");
  try{
-  const controller=new AbortController();
-  const timer=setTimeout(()=>controller.abort(),15000);
-  const res=await fetch("/api/discover",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload()),signal:controller.signal});
-  clearTimeout(timer);
+  const res=await fetch("/api/discover",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload())});
   const json=await res.json();if(!res.ok||!json.ok)throw new Error(json.error||"discover_failed");
-  await loadAll();
-  const restart=json.restart_required?" Restart the device to expose newly added or removed Matter endpoints.":"";
-  setStatus(`Discovery completed. Found ${json.light_count||0} light entities.${restart}`,"good");
- }catch(e){setStatus(`Discovery failed: ${e.name==="AbortError"?"gateway_timeout":e.message}`,"bad");}
+  const count=json.light_count||0;
+  setStatus(`Discovery completed. Found ${count} light channels. Restarting…`,"good");
+  // Show reboot overlay with countdown — board will restart in ~1s
+  rebooting=true;
+  els.rebootOverlay.style.display="flex";
+  let sec=8;els.rebootTimer.textContent=`Rebooting in ${sec} seconds...`;
+  const iv=setInterval(()=>{sec--;if(sec<=0){els.rebootTimer.textContent="Waiting for board...";}else{els.rebootTimer.textContent=`Restarting — back in ${sec}s...`;}},1000);
+  // Poll for the board to come back online
+  setTimeout(async()=>{
+   for(let i=0;i<45;i++){
+    await new Promise(r=>setTimeout(r,1500));
+    try{const r=await fetch("/api/status",{cache:"no-store",signal:AbortSignal.timeout(2000)});if(r.ok){rebooting=false;els.rebootOverlay.style.display="none";clearInterval(iv);els.discoverBtn.disabled=false;els.saveBtn.disabled=false;await loadAll(true);setStatus("Reboot complete! Bridge is back online.","good");return;}}catch(e){}
+   }
+   rebooting=false;els.rebootOverlay.style.display="none";clearInterval(iv);els.discoverBtn.disabled=false;els.saveBtn.disabled=false;setStatus("Board did not come back online within 60s. Please check power and Wi-Fi.","bad");
+  },8000);
+ }catch(e){els.discoverBtn.disabled=false;els.saveBtn.disabled=false;setStatus(`Discovery failed: ${e.name==="AbortError"?"gateway_timeout":e.message}`,"bad");}
  finally{busy=false;}
 }
 ["input","change"].forEach(evt=>[els.host,els.port,els.scanInterval].forEach(el=>el.addEventListener(evt,()=>{formDirty=true;})));
 els.saveBtn.addEventListener("click",saveConfig);
 els.discoverBtn.addEventListener("click",discover);
-loadAll(true);setInterval(()=>{if(!busy)loadAll(false);},3000);
+loadAll(true);setInterval(()=>{if(!busy&&!rebooting)loadAll(false);},3000);
 </script>
 </body>
 </html>)html";
@@ -1090,6 +1166,7 @@ esp_err_t roehn_set_load(const LightConfig &light, uint8_t level_percent)
 // ── Event listener task ──────────────────────────────────────────────────────────
 
 static void sync_light_state_to_matter(uint8_t index);
+static bool roehn_query_load(const LightConfig &light, uint8_t *out_level);
 
 // Parse a single feedback line received from the gateway and update state.
 static void process_event_line(const char *line)
@@ -1120,6 +1197,24 @@ static void process_event_line(const char *line)
                          static_cast<unsigned>(i),
                          g_config.lights[i].name);
                 break;
+            }
+        }
+    }
+
+    // R:MODULE STATUS <hsnet_id> <status> — trigger immediate load query for this module
+    if (strncmp(line, "R:MODULE STATUS ", 16) == 0) {
+        int hsnet_id = 0, status = 0;
+        if (sscanf(line, "R:MODULE STATUS %d %d", &hsnet_id, &status) == 2 && hsnet_id > 0) {
+            for (uint8_t i = 0; i < g_config.light_count; ++i) {
+                if (resolve_control_address(g_config.lights[i]) == static_cast<uint16_t>(hsnet_id)) {
+                    uint8_t level = 0;
+                    if (roehn_query_load(g_config.lights[i], &level)) {
+                        g_light_states[i].level_percent = level;
+                        g_light_states[i].on = level > 0;
+                        sync_light_state_to_matter(i);
+                    }
+                    vTaskDelay(pdMS_TO_TICKS(20));
+                }
             }
         }
     }
@@ -1436,7 +1531,9 @@ size_t describe_light_entities(const DeviceInfo *devices, size_t device_count, L
 
                 snprintf(light.id, sizeof(light.id), "%s-%u", serial_token[0] ? serial_token : "light",
                          static_cast<unsigned>(channel));
-                snprintf(light.name, sizeof(light.name), "%s Channel %u", device.model[0] ? device.model : "ROEHN Light",
+                snprintf(light.name, sizeof(light.name), "%u-%s-%u",
+                         static_cast<unsigned>(device.hsnet_id > 0 ? device.hsnet_id : device.device_id),
+                         device.model[0] ? device.model : "LIGHT",
                          static_cast<unsigned>(channel));
                 ESP_LOGI(kTag, "  Added fallback light entity: id=%s channel=%u brightness=%s addr=%u", light.id,
                          static_cast<unsigned>(light.channel), light.supports_brightness ? "yes" : "no",
@@ -1489,7 +1586,9 @@ size_t describe_light_entities(const DeviceInfo *devices, size_t device_count, L
 
                 snprintf(light.id, sizeof(light.id), "%s-%u", serial_token[0] ? serial_token : "light",
                          static_cast<unsigned>(channel));
-                snprintf(light.name, sizeof(light.name), "%s Channel %u", device.model[0] ? device.model : "ROEHN Light",
+                snprintf(light.name, sizeof(light.name), "%u-%s-%u",
+                         static_cast<unsigned>(device.hsnet_id > 0 ? device.hsnet_id : device.device_id),
+                         device.model[0] ? device.model : "LIGHT",
                          static_cast<unsigned>(channel));
                 ESP_LOGI(kTag, "  Added light entity: id=%s channel=%u brightness=%s addr=%u", light.id,
                          static_cast<unsigned>(light.channel), light.supports_brightness ? "yes" : "no",
@@ -1572,11 +1671,18 @@ void apply_light_endpoint_metadata(uint8_t index, esp_matter::endpoint_t *endpoi
                                       chip::app::Clusters::BridgedDeviceBasicInformation::Attributes::NodeLabel::Id, &value);
     }
 
-    if (g_config.lights[index].model[0]) {
+    // Also set Reachable=true so HA marks the bridged endpoint as available
+    esp_matter_attr_val_t reachable_val = esp_matter_bool(true);
+    esp_matter::attribute::update(esp_matter::endpoint::get_id(endpoint),
+                                  chip::app::Clusters::BridgedDeviceBasicInformation::Id,
+                                  chip::app::Clusters::BridgedDeviceBasicInformation::Attributes::Reachable::Id, &reachable_val);
+
+    // Use the same user-friendly name for ProductName so HA entity names
+    // match the new naming convention (e.g. "104-DIM8-1").
+    if (node_label[0]) {
         esp_matter::cluster::bridged_device_basic_information::attribute::create_product_name(
-            bridge_cluster, g_config.lights[index].model, strlen(g_config.lights[index].model));
-        esp_matter_attr_val_t value =
-            esp_matter_char_str(g_config.lights[index].model, strlen(g_config.lights[index].model));
+            bridge_cluster, node_label, strlen(node_label));
+        esp_matter_attr_val_t value = esp_matter_char_str(node_label, strlen(node_label));
         esp_matter::attribute::update(esp_matter::endpoint::get_id(endpoint),
                                       chip::app::Clusters::BridgedDeviceBasicInformation::Id,
                                       chip::app::Clusters::BridgedDeviceBasicInformation::Attributes::ProductName::Id, &value);
@@ -1686,10 +1792,42 @@ bool refresh_gateway_runtime(bool refresh_loads)
 void gateway_poll_task(void *)
 {
     ESP_LOGI(kTag, "Gateway poll task started");
+    int64_t last_full_refresh_us = 0;
+    const int64_t full_refresh_interval_us = static_cast<int64_t>(std::max<uint16_t>(5, g_config.scan_interval_sec)) * 1000000LL;
+    constexpr int64_t kFastPollIntervalUs = 5000000LL;  // query loads every 5 seconds
+
     while (true) {
-        refresh_gateway_runtime(true);
-        const uint16_t interval = std::max<uint16_t>(5, g_config.scan_interval_sec);
-        vTaskDelay(pdMS_TO_TICKS(interval * 1000U));
+        const int64_t now_us = esp_timer_get_time();
+        const bool do_full = (now_us - last_full_refresh_us) >= full_refresh_interval_us;
+
+        if (do_full) {
+            last_full_refresh_us = now_us;
+            refresh_gateway_runtime(false);  // full discovery refresh (no load queries — fast poll handles it)
+        }
+
+        // Fast poll: query load levels for all configured lights
+        if (g_gateway.connected && g_config.light_count > 0) {
+            for (uint8_t i = 0; i < g_config.light_count; ++i) {
+                uint8_t level = 0;
+                if (roehn_query_load(g_config.lights[i], &level)) {
+                    const bool prev_on = g_light_states[i].on;
+                    const uint8_t prev_level = g_light_states[i].level_percent;
+                    g_light_states[i].level_percent = level;
+                    g_light_states[i].on = level > 0;
+                    if (prev_on != g_light_states[i].on || prev_level != g_light_states[i].level_percent) {
+                        sync_light_state_to_matter(i);
+                        ESP_LOGI(kTag, "Fast poll updated %s: %u%%", g_config.lights[i].name, level);
+                    }
+                }
+                vTaskDelay(pdMS_TO_TICKS(30));  // small gap between queries
+            }
+        }
+
+        // Sleep until next fast poll (1 second at a time to stay responsive)
+        const int64_t next_poll_us = now_us + kFastPollIntervalUs;
+        while (esp_timer_get_time() < next_poll_us) {
+            vTaskDelay(pdMS_TO_TICKS(1000));
+        }
     }
 }
 
@@ -2084,28 +2222,196 @@ static esp_matter::endpoint_t *create_minimal_light_endpoint(
 
 void create_light_endpoints(esp_matter::node_t *node)
 {
-    for (uint8_t i = 0; i < g_config.light_count; ++i) {
-        esp_matter::endpoint_t *endpoint = create_minimal_light_endpoint(
-            node,
-            g_config.lights[i].supports_brightness,
-            g_light_states[i].on,
-            level_percent_to_matter(g_light_states[i].level_percent)
-        );
+    // ── Group lights by module (serial_hex) ──────────────────────────────
+    struct ModuleGroup {
+        const char *serial;
+        const char *model_name;
+        uint8_t start_index;
+        uint8_t count;
+    };
 
-        if (!endpoint) {
-            ESP_LOGE(kTag, "Failed to create endpoint for %s", g_config.lights[i].name);
+    ModuleGroup modules[32] = {};
+    uint8_t module_count = 0;
+
+    for (uint8_t i = 0; i < g_config.light_count; ++i) {
+        const char *serial = g_config.lights[i].serial_hex;
+        uint8_t m = 0;
+        for (; m < module_count; ++m) {
+            if (strcmp(modules[m].serial, serial) == 0) {
+                modules[m].count++;
+                break;
+            }
+        }
+        if (m == module_count && module_count < 32) {
+            modules[module_count].serial = serial;
+            modules[module_count].model_name = g_config.lights[i].model;
+            modules[module_count].start_index = i;
+            modules[module_count].count = 1;
+            module_count++;
+        }
+    }
+
+    g_config.module_count = module_count;
+
+    // ── Get the aggregator endpoint (EP1) ────────────────────────────────
+    esp_matter::endpoint_t *agg_ep = esp_matter::endpoint::get(node, 1);
+    if (!agg_ep) {
+        ESP_LOGE(kTag, "Aggregator endpoint (EP1) not found");
+        return;
+    }
+
+    // ── Create one bridged_node per module, then child light endpoints ───
+    // Use create() (auto-assign IDs) so ESP-Matter handles persistence.
+    for (uint8_t m = 0; m < module_count; ++m) {
+
+        // ── Module parent: create a bridged_node ─────────────────────────
+        esp_matter::endpoint::bridged_node::config_t bn_cfg = {};
+        esp_matter::endpoint_t *module_ep =
+            esp_matter::endpoint::bridged_node::create(node, &bn_cfg, esp_matter::ENDPOINT_FLAG_BRIDGE, nullptr);
+        if (!module_ep) {
+            ESP_LOGE(kTag, "Failed to create bridged_node for module %u", m);
             continue;
         }
 
-        apply_light_endpoint_metadata(i, endpoint);
+        const uint16_t parent_ep_id = esp_matter::endpoint::get_id(module_ep);
+        g_config.module_parent_ids[m] = parent_ep_id;
 
-        g_endpoint_ids[i] = esp_matter::endpoint::get_id(endpoint);
+        char module_label[33] = {};
+        snprintf(module_label, sizeof(module_label), "%u-%s",
+                 static_cast<unsigned>(resolve_control_address(g_config.lights[modules[m].start_index])),
+                 modules[m].model_name[0] ? modules[m].model_name : "Module");
 
-        ESP_LOGI(kTag, "Created %s endpoint=%u addr=%u ch=%u",
-                 g_config.lights[i].name,
-                 g_endpoint_ids[i],
-                 static_cast<unsigned>(resolve_control_address(g_config.lights[i])),
-                 static_cast<unsigned>(g_config.lights[i].channel));
+        // Set NodeLabel / ProductName / Reachable / Serial on the bridged_node
+        esp_matter::cluster_t *bn_cluster =
+            esp_matter::cluster::get(module_ep, chip::app::Clusters::BridgedDeviceBasicInformation::Id);
+        if (bn_cluster) {
+            esp_matter::cluster::bridged_device_basic_information::attribute::create_node_label(
+                bn_cluster, module_label, strlen(module_label));
+            esp_matter_attr_val_t nl_val = esp_matter_char_str(module_label, strlen(module_label));
+            esp_matter::attribute::update(parent_ep_id,
+                                          chip::app::Clusters::BridgedDeviceBasicInformation::Id,
+                                          chip::app::Clusters::BridgedDeviceBasicInformation::Attributes::NodeLabel::Id,
+                                          &nl_val);
+
+            esp_matter::cluster::bridged_device_basic_information::attribute::create_product_name(
+                bn_cluster, module_label, strlen(module_label));
+            esp_matter_attr_val_t pn_val = esp_matter_char_str(module_label, strlen(module_label));
+            esp_matter::attribute::update(parent_ep_id,
+                                          chip::app::Clusters::BridgedDeviceBasicInformation::Id,
+                                          chip::app::Clusters::BridgedDeviceBasicInformation::Attributes::ProductName::Id,
+                                          &pn_val);
+
+            esp_matter_attr_val_t reach = esp_matter_bool(true);
+            esp_matter::attribute::update(parent_ep_id,
+                                          chip::app::Clusters::BridgedDeviceBasicInformation::Id,
+                                          chip::app::Clusters::BridgedDeviceBasicInformation::Attributes::Reachable::Id,
+                                          &reach);
+
+            esp_matter::cluster::bridged_device_basic_information::attribute::create_serial_number(
+                bn_cluster, const_cast<char *>(modules[m].serial), strlen(modules[m].serial));
+            esp_matter_attr_val_t sn_val = esp_matter_char_str(const_cast<char *>(modules[m].serial), strlen(modules[m].serial));
+            esp_matter::attribute::update(parent_ep_id,
+                                          chip::app::Clusters::BridgedDeviceBasicInformation::Id,
+                                          chip::app::Clusters::BridgedDeviceBasicInformation::Attributes::SerialNumber::Id,
+                                          &sn_val);
+        }
+
+        // Fixed Label on module parent
+        {
+            esp_matter::cluster::fixed_label::config_t fl_cfg = {};
+            esp_matter::cluster::fixed_label::create(module_ep, &fl_cfg, esp_matter::CLUSTER_FLAG_SERVER);
+        }
+
+        // Module parent is a child of the aggregator
+        esp_matter::endpoint::set_parent_endpoint(module_ep, agg_ep);
+
+        ESP_LOGI(kTag, "Module EP%u '%s' (%u channels)",
+                 parent_ep_id, module_label, modules[m].count);
+
+        // ── Child light endpoints ────────────────────────────────────────
+        for (uint8_t c = 0; c < modules[m].count; ++c) {
+            const uint8_t light_index = modules[m].start_index + c;
+
+            esp_matter::endpoint_t *child_ep =
+                esp_matter::endpoint::create(node, esp_matter::ENDPOINT_FLAG_BRIDGE, nullptr);
+            if (!child_ep) {
+                ESP_LOGE(kTag, "Failed to create child endpoint for light[%u]", light_index);
+                continue;
+            }
+
+            const uint16_t child_ep_id = esp_matter::endpoint::get_id(child_ep);
+            g_endpoint_ids[light_index] = child_ep_id;
+
+            // Add device type
+            uint32_t dt_id = g_config.lights[light_index].supports_brightness
+                                 ? ESP_MATTER_DIMMABLE_LIGHT_DEVICE_TYPE_ID
+                                 : ESP_MATTER_ON_OFF_LIGHT_DEVICE_TYPE_ID;
+            uint8_t dt_ver = g_config.lights[light_index].supports_brightness
+                                 ? ESP_MATTER_DIMMABLE_LIGHT_DEVICE_TYPE_VERSION
+                                 : ESP_MATTER_ON_OFF_LIGHT_DEVICE_TYPE_VERSION;
+            esp_matter::endpoint::add_device_type(child_ep, dt_id, dt_ver);
+
+            using namespace esp_matter;
+            using namespace esp_matter::cluster;
+
+            // Descriptor
+            descriptor::config_t desc_cfg = {};
+            descriptor::create(child_ep, &desc_cfg, CLUSTER_FLAG_SERVER);
+
+            // Identify
+            identify::config_t id_cfg = {};
+            cluster_t *id_cluster = identify::create(child_ep, &id_cfg, CLUSTER_FLAG_SERVER);
+            identify::command::create_trigger_effect(id_cluster);
+
+            // Groups
+            groups::config_t grp_cfg = {};
+            groups::create(child_ep, &grp_cfg, CLUSTER_FLAG_SERVER);
+
+            // OnOff
+            on_off::config_t onoff_cfg = {};
+            onoff_cfg.on_off = g_light_states[light_index].on;
+            cluster_t *onoff_cluster = on_off::create(child_ep, &onoff_cfg, CLUSTER_FLAG_SERVER);
+            on_off::command::create_on(onoff_cluster);
+            on_off::command::create_off(onoff_cluster);
+            on_off::command::create_toggle(onoff_cluster);
+
+            if (g_config.lights[light_index].supports_brightness) {
+                level_control::config_t lvl_cfg = {};
+                lvl_cfg.current_level = nullable<uint8_t>(
+                    level_percent_to_matter(g_light_states[light_index].level_percent));
+                cluster_t *lvl_cluster = level_control::create(child_ep, &lvl_cfg, CLUSTER_FLAG_SERVER);
+                level_control::feature::on_off::add(lvl_cluster);
+                level_control::command::create_move_to_level(lvl_cluster);
+                level_control::command::create_move(lvl_cluster);
+                level_control::command::create_step(lvl_cluster);
+                level_control::command::create_stop(lvl_cluster);
+                level_control::command::create_move_to_level_with_on_off(lvl_cluster);
+                level_control::command::create_move_with_on_off(lvl_cluster);
+                level_control::command::create_step_with_on_off(lvl_cluster);
+                level_control::command::create_stop_with_on_off(lvl_cluster);
+            }
+
+            // Scenes
+            scenes_management::config_t scn_cfg = {};
+            cluster_t *scenes_cluster = scenes_management::create(child_ep, &scn_cfg, CLUSTER_FLAG_SERVER);
+            scenes_management::command::create_copy_scene(scenes_cluster);
+            scenes_management::command::create_copy_scene_response(scenes_cluster);
+
+            // Fixed Label with channel name
+            {
+                fixed_label::config_t fl_cfg = {};
+                fixed_label::create(child_ep, &fl_cfg, CLUSTER_FLAG_SERVER);
+            }
+
+            // Attach child to module parent
+            esp_matter::endpoint::set_parent_endpoint(child_ep, module_ep);
+
+            ESP_LOGI(kTag, "  Light EP%u '%s' addr=%u ch=%u %s",
+                     child_ep_id, g_config.lights[light_index].name,
+                     static_cast<unsigned>(resolve_control_address(g_config.lights[light_index])),
+                     static_cast<unsigned>(g_config.lights[light_index].channel),
+                     g_config.lights[light_index].supports_brightness ? "dimmer" : "relay");
+        }
     }
 }
 
@@ -2300,10 +2606,19 @@ esp_err_t discover_post_handler(httpd_req_t *req)
         return httpd_resp_sendstr(req, response);
     }
 
-    char response[128];
-    snprintf(response, sizeof(response), "{\"ok\":true,\"light_count\":%u,\"restart_required\":%s}",
-             static_cast<unsigned>(outcome.light_count), outcome.restart_required ? "true" : "false");
-    return httpd_resp_sendstr(req, response);
+    const uint8_t light_count = outcome.light_count;
+    char response[192];
+    snprintf(response, sizeof(response), "{\"ok\":true,\"light_count\":%u,\"restart_required\":true}",
+             static_cast<unsigned>(light_count));
+    httpd_resp_set_type(req, "application/json");
+    httpd_resp_sendstr(req, response);
+
+    // Give the TCP stack ~500ms to flush the response, then restart.
+    // httpd_resp_sendstr() queues the response but it may not have been
+    // fully transmitted yet. A short delay ensures the browser gets it.
+    vTaskDelay(pdMS_TO_TICKS(500));
+    esp_restart();
+    return ESP_OK;
 }
 
 void start_http_server()
