@@ -1167,6 +1167,7 @@ esp_err_t roehn_set_load(const LightConfig &light, uint8_t level_percent)
 
 static void sync_light_state_to_matter(uint8_t index);
 static bool roehn_query_load(const LightConfig &light, uint8_t *out_level);
+static void roehn_query_device_loads(uint16_t deviceAddress);
 
 // Parse a single feedback line received from the gateway and update state.
 static void process_event_line(const char *line)
@@ -1201,21 +1202,11 @@ static void process_event_line(const char *line)
         }
     }
 
-    // R:MODULE STATUS <hsnet_id> <status> — trigger immediate load query for this module
+    // R:MODULE STATUS <hsnet_id> <status> — trigger load refresh for this device
     if (strncmp(line, "R:MODULE STATUS ", 16) == 0) {
         int hsnet_id = 0, status = 0;
         if (sscanf(line, "R:MODULE STATUS %d %d", &hsnet_id, &status) == 2 && hsnet_id > 0) {
-            for (uint8_t i = 0; i < g_config.light_count; ++i) {
-                if (resolve_control_address(g_config.lights[i]) == static_cast<uint16_t>(hsnet_id)) {
-                    uint8_t level = 0;
-                    if (roehn_query_load(g_config.lights[i], &level)) {
-                        g_light_states[i].level_percent = level;
-                        g_light_states[i].on = level > 0;
-                        sync_light_state_to_matter(i);
-                    }
-                    vTaskDelay(pdMS_TO_TICKS(20));
-                }
-            }
+            roehn_query_device_loads(static_cast<uint16_t>(hsnet_id));
         }
     }
 }
@@ -1280,13 +1271,50 @@ static void event_listener_task(void *)
         ESP_LOGI(kTag, "Event listener connected to %s:%u",
                  g_config.gateway_host, static_cast<unsigned>(kDefaultCommandPort));
 
+        // Savant profile: REFRESH on connect to force full diagnostic dump
+        {
+            char refresh_resp[256] = {};
+            send_command_persistent("REFRESH", refresh_resp, sizeof(refresh_resp));
+            ESP_LOGI(kTag, "Event listener sent REFRESH, rx: %s", refresh_resp[0] ? refresh_resp : "(none)");
+        }
+
         // Read lines indefinitely — use MSG_DONTWAIT so we never block while
         // holding the socket lock.  The command path acquires the same lock,
         // sends a command, reads the response, and releases.
         char buffer[1024];
         size_t buf_len = 0;
+        int64_t last_sta_us = esp_timer_get_time();
+        int64_t last_mod_us = last_sta_us + 10000000LL;  // MOD 10s after connect, then every 57s
+        constexpr int64_t kStaIntervalUs = 10000000LL;   // STA every 10s (Savant profile)
+        constexpr int64_t kModIntervalUs = 57000000LL;   // MOD every 57s (Savant profile)
 
         while (true) {
+            const int64_t now_us = esp_timer_get_time();
+
+            // STA keep-alive every 10s — prevents gateway from closing connection
+            if (now_us - last_sta_us >= kStaIntervalUs) {
+                last_sta_us = now_us;
+                if (g_event_lock && xSemaphoreTake(g_event_lock, pdMS_TO_TICKS(200)) == pdTRUE) {
+                    if (g_event_sock >= 0) {
+                        const char *sta_cmd = "STA\r\n";
+                        send(g_event_sock, sta_cmd, strlen(sta_cmd), 0);
+                    }
+                    xSemaphoreGive(g_event_lock);
+                }
+            }
+
+            // MOD diagnostic every 57s — triggers R:MODULE STATUS and R:MODULES OFFLINE
+            if (now_us - last_mod_us >= kModIntervalUs) {
+                last_mod_us = now_us;
+                if (g_event_lock && xSemaphoreTake(g_event_lock, pdMS_TO_TICKS(200)) == pdTRUE) {
+                    if (g_event_sock >= 0) {
+                        const char *mod_cmd = "MOD\r\n";
+                        send(g_event_sock, mod_cmd, strlen(mod_cmd), 0);
+                    }
+                    xSemaphoreGive(g_event_lock);
+                }
+            }
+
             // Try to acquire the lock.  If a command is in flight we wait briefly.
             if (!g_event_lock || xSemaphoreTake(g_event_lock, pdMS_TO_TICKS(100)) != pdTRUE) {
                 vTaskDelay(pdMS_TO_TICKS(10));
@@ -1332,13 +1360,50 @@ static void event_listener_task(void *)
 
 bool roehn_query_load(const LightConfig &light, uint8_t *out_level)
 {
+    // Savant profile: GETLOAD <device> queries ALL channels on that device.
+    // The gateway responds with one R:LOAD per channel.
     char command[64];
-    snprintf(command, sizeof(command), "GETLOAD %u %u", static_cast<unsigned>(resolve_control_address(light)),
-             static_cast<unsigned>(light.channel));
+    snprintf(command, sizeof(command), "GETLOAD %u", static_cast<unsigned>(resolve_control_address(light)));
 
     char lines[1024] = {};
     if (!send_command_persistent(command, lines, sizeof(lines))) {
         return false;
+    }
+
+    bool found = false;
+    char *saveptr = nullptr;
+    for (char *line = strtok_r(lines, "\r\n", &saveptr); line; line = strtok_r(nullptr, "\r\n", &saveptr)) {
+        uint16_t address = 0;
+        uint8_t channel = 0;
+        uint8_t level = 0;
+        if (!parse_load_line(line, &address, &channel, &level)) {
+            continue;
+        }
+        // Update state for ALL lights on this device
+        for (uint8_t i = 0; i < g_config.light_count; ++i) {
+            if (resolve_control_address(g_config.lights[i]) == address &&
+                g_config.lights[i].channel == channel) {
+                g_light_states[i].level_percent = level;
+                g_light_states[i].on = level > 0;
+                sync_light_state_to_matter(i);
+                found = true;
+                break;
+            }
+        }
+    }
+    return found;
+}
+
+// Query all loads for a given device address.  Used by fast poll and
+// event-driven refresh to batch all channels in one telnet round-trip.
+static void roehn_query_device_loads(uint16_t device_address)
+{
+    char command[64];
+    snprintf(command, sizeof(command), "GETLOAD %u", static_cast<unsigned>(device_address));
+
+    char lines[1024] = {};
+    if (!send_command_persistent(command, lines, sizeof(lines))) {
+        return;
     }
 
     char *saveptr = nullptr;
@@ -1349,14 +1414,16 @@ bool roehn_query_load(const LightConfig &light, uint8_t *out_level)
         if (!parse_load_line(line, &address, &channel, &level)) {
             continue;
         }
-        if (address == resolve_control_address(light) && channel == light.channel) {
-            if (out_level) {
-                *out_level = level;
+        for (uint8_t i = 0; i < g_config.light_count; ++i) {
+            if (resolve_control_address(g_config.lights[i]) == address &&
+                g_config.lights[i].channel == channel) {
+                g_light_states[i].level_percent = level;
+                g_light_states[i].on = level > 0;
+                sync_light_state_to_matter(i);
+                break;
             }
-            return true;
         }
     }
-    return false;
 }
 
 bool load_resources_index()
@@ -1794,7 +1861,7 @@ void gateway_poll_task(void *)
     ESP_LOGI(kTag, "Gateway poll task started");
     int64_t last_full_refresh_us = 0;
     const int64_t full_refresh_interval_us = static_cast<int64_t>(std::max<uint16_t>(5, g_config.scan_interval_sec)) * 1000000LL;
-    constexpr int64_t kFastPollIntervalUs = 5000000LL;  // query loads every 5 seconds
+    constexpr int64_t kFastPollIntervalUs = 2000000LL;  // query loads every 2 seconds
 
     while (true) {
         const int64_t now_us = esp_timer_get_time();
@@ -1802,28 +1869,24 @@ void gateway_poll_task(void *)
 
         if (do_full) {
             last_full_refresh_us = now_us;
-            refresh_gateway_runtime(false);  // full discovery refresh (no load queries — fast poll handles it)
+            refresh_gateway_runtime(false);
         }
 
-        // Fast poll: query load levels for all configured lights
+        // Fast poll per DEVICE (Savant style: GETLOAD <device> fetches all channels)
         if (g_gateway.connected && g_config.light_count > 0) {
+            // Collect unique device addresses
+            bool seen[65536] = {};
             for (uint8_t i = 0; i < g_config.light_count; ++i) {
-                uint8_t level = 0;
-                if (roehn_query_load(g_config.lights[i], &level)) {
-                    const bool prev_on = g_light_states[i].on;
-                    const uint8_t prev_level = g_light_states[i].level_percent;
-                    g_light_states[i].level_percent = level;
-                    g_light_states[i].on = level > 0;
-                    if (prev_on != g_light_states[i].on || prev_level != g_light_states[i].level_percent) {
-                        sync_light_state_to_matter(i);
-                        ESP_LOGI(kTag, "Fast poll updated %s: %u%%", g_config.lights[i].name, level);
-                    }
+                const uint16_t addr = resolve_control_address(g_config.lights[i]);
+                if (!seen[addr]) {
+                    seen[addr] = true;
+                    roehn_query_device_loads(addr);
+                    vTaskDelay(pdMS_TO_TICKS(50));  // gap between device queries
                 }
-                vTaskDelay(pdMS_TO_TICKS(30));  // small gap between queries
             }
         }
 
-        // Sleep until next fast poll (1 second at a time to stay responsive)
+        // Sleep until next fast poll
         const int64_t next_poll_us = now_us + kFastPollIntervalUs;
         while (esp_timer_get_time() < next_poll_us) {
             vTaskDelay(pdMS_TO_TICKS(1000));
@@ -1915,7 +1978,7 @@ DiscoveryOutcome perform_discovery(AppConfig *config)
 
     const size_t previous_light_count = g_config.light_count;
 
-    memset(config->lights, 0, sizeof(config->lights));
+    memset(config->lights, 0, kMaxLights * sizeof(LightConfig));
     const size_t light_count = describe_light_entities(devices, device_count, config->lights, kMaxLights);
     ESP_LOGI(kTag, "Discovery result: %u light entities", static_cast<unsigned>(light_count));
     config->light_count = static_cast<uint8_t>(light_count);
