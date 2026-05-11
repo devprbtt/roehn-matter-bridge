@@ -1874,14 +1874,33 @@ void gateway_poll_task(void *)
 
         // Fast poll per DEVICE (Savant style: GETLOAD <device> fetches all channels)
         if (g_gateway.connected && g_config.light_count > 0) {
-            // Collect unique device addresses
-            bool seen[65536] = {};
+            // Track unique device addresses with a small bitmap.
+            // Max device address seen in practice is < 512, but use 1024 bits (128 bytes) for safety.
+            static constexpr size_t kBitmapWords = 1024 / 32;
+            uint32_t seen_bitmap[kBitmapWords] = {};
             for (uint8_t i = 0; i < g_config.light_count; ++i) {
                 const uint16_t addr = resolve_control_address(g_config.lights[i]);
-                if (!seen[addr]) {
-                    seen[addr] = true;
-                    roehn_query_device_loads(addr);
-                    vTaskDelay(pdMS_TO_TICKS(50));  // gap between device queries
+                if (addr < 1024) {
+                    const size_t word = addr / 32;
+                    const uint32_t mask = 1UL << (addr % 32);
+                    if (!(seen_bitmap[word] & mask)) {
+                        seen_bitmap[word] |= mask;
+                        roehn_query_device_loads(addr);
+                        vTaskDelay(pdMS_TO_TICKS(50));
+                    }
+                } else {
+                    // Fallback for high addresses: linear scan
+                    bool dup = false;
+                    for (uint8_t j = 0; j < i; ++j) {
+                        if (resolve_control_address(g_config.lights[j]) == addr) {
+                            dup = true;
+                            break;
+                        }
+                    }
+                    if (!dup) {
+                        roehn_query_device_loads(addr);
+                        vTaskDelay(pdMS_TO_TICKS(50));
+                    }
                 }
             }
         }
